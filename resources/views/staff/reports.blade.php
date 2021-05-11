@@ -162,7 +162,7 @@
                                                 <th>Staff No</th>
                                                 <th>Name</th>
                                                 <th>Temperature</th>
-                                                <th>Time(Arrival)</th>
+                                                <th>Time(event)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -188,6 +188,7 @@
                                                             $new_time = date("Y-m-d h:i a", strtotime('+3 hours', strtotime($date)));
                                                             echo $new_time;
                                                         @endphp
+                                                        ({{$item->status=='enter'?'Arrival':'Departure'}})
                                                     </td>
 
                                                 </tr>
@@ -199,7 +200,7 @@
                                                 <th>Staff No</th>
                                                 <th>Name</th>
                                                 <th>Temperature</th>
-                                                <th>Time(Arrival)</th>
+                                                <th>Time(event)</th>
                                             </tr>
                                         </tfoot>
                                     </table>

@@ -471,14 +471,14 @@ if($templetes->save()){
                 $myRecords = FaceRecord::whereDate('face_records.created_at', Carbon::today())
                     ->join('students', function ($join) {
                         $join->on('students.upi_no', '=', 'face_records.upi_no');
-                    })->where('students.class', '=', $request->class)->where('face_records.status','=','enter')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                    })->where('students.class', '=', $request->class)->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             } else {
                 $title = 'Class ' . $request->class;
                 $allStudents = Student::where('class', '=', $request->class)->paginate(300);
                 $myRecords = FaceRecord::whereDate('face_records.created_at', Carbon::today())
                     ->join('students', function ($join) {
                         $join->on('students.upi_no', '=', 'face_records.upi_no');
-                    })->where('face_records.status','=','enter')->where('students.class', '=', $request->class)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                    })->whereNotNull('face_records.status')->where('students.class', '=', $request->class)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             }
         } else {
             if ($request->stream != 'all') {
@@ -491,11 +491,11 @@ if($templetes->save()){
                 $myRecords = FaceRecord::whereDate('face_records.created_at', Carbon::today())
                     ->join('students', function ($join) {
                         $join->on('students.upi_no', '=', 'face_records.upi_no');
-                    })->where('face_records.status','=','enter')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                    })->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             } else {
                 $title = 'All Classes in all Streams';
                 $allStudents = Student::paginate(300);
-                $myRecords = FaceRecord::whereDate('face_records.created_at', Carbon::today())->where('face_records.status','=','enter')->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                $myRecords = FaceRecord::whereDate('face_records.created_at', Carbon::today())->whereNotNull('face_records.status')->orderBy('face_records.created_at', 'ASC')->paginate(300);
             }
         }
         // dd($myRecords[0]->student);
@@ -542,7 +542,7 @@ if($templetes->save()){
                         $join->on('students.upi_no', '=', 'face_records.upi_no');
                     })->where('time_taken','>',$myvar)
                     ->where('time_taken','<',$myvar2)
-                    ->where('students.class', '=', $request->class)->where('face_records.status','=','enter')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                    ->where('students.class', '=', $request->class)->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             } else {
                 $title = 'Class ' . $request->class;
                 $allStudents = Student::where('class', '=', $request->class)->paginate(300);
@@ -550,7 +550,7 @@ if($templetes->save()){
                         $join->on('students.upi_no', '=', 'face_records.upi_no');
                     })->where('time_taken','>',$myvar)
                     ->where('time_taken','<',$myvar2)
-                    ->where('face_records.status','=','enter')->where('students.class', '=', $request->class)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                    ->whereNotNull('face_records.status')->where('students.class', '=', $request->class)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             }
         } else {
             if ($request->stream != 'all') {
@@ -564,11 +564,11 @@ if($templetes->save()){
                         $join->on('students.upi_no', '=', 'face_records.upi_no');
                     })->where('time_taken','>',$myvar)
                     ->where('time_taken','<',$myvar2)
-                    ->where('face_records.status','=','enter')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                    ->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             } else {
                 $title = 'All Classes in all Streams';
                 $allStudents = Student::paginate(300);
-                $myRecords = FaceRecord::where('face_records.status','=','enter')->where('time_taken','>',$myvar)
+                $myRecords = FaceRecord::whereNotNull('face_records.status')->where('time_taken','>',$myvar)
                 ->where('time_taken','<',$myvar2)
                 ->orderBy('face_records.created_at', 'ASC')->paginate(300);
             }
