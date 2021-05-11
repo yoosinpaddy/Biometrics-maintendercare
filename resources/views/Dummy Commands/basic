@@ -1,0 +1,16 @@
+
+php artisan make:model singular_name -mcr Creates Model(plural_name), Migration(with schema), Controller, -r(creates resource functions in controller)
+
+php artisan make:model singular_name -mca Creates Model(plural_name), Migration(with schema), Controller, -r(creates resource functions in controller), seeder, factory
+
+php artisan optimize:clear Clears cache, complied views,
+    Compiled views cleared!
+    Application cache cleared!
+    Route cache cleared!
+    Configuration cache cleared!
+    Compiled services and packages files removed!
+    Caches cleared successfully!
+
+php artisan make:migration add_field_name_to_tablename  Create migration with schema to add field to named table
+
+
