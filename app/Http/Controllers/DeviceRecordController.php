@@ -9,6 +9,7 @@ use App\Models\Smstemplete;
 use App\Models\Staff;
 use App\Models\StaffFaceRecord;
 use App\Models\Student;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -228,16 +229,40 @@ class DeviceRecordController extends Controller
         $students_count=Student::withTrashed()->where('class','!=','9')->get();
         $students=Student::withTrashed()->where('class','!=','9')->paginate(100, ['*'], 'page', $pageNumber);
 
+        $users = User::withTrashed()
+        ->leftJoin('students', function ($join) {
+            $join->on('users.id', '=', 'students.user_id')
+                 ->where('students.class', '!=','9');
+        })
+        // ->leftJoin('students', 'users.id', '=', 'students.user_id')
+            ->leftJoin('staff', 'users.id', '=', 'staff.user_id')
+            ->select('users.*', 'students.upi_no', 'students.class', 'staff.staff_id')
+            ->where('users.password','=',null)
+            // ->get();
+            ->paginate(100, ['*'], 'page', $pageNumber);
+
+        // dd($users);
         $formated_students=[];
-        foreach ($students as $student) {
+        foreach ($users as $student) {
+            if(isset($student->upi_no)){
+                array_push($formated_students, (object)[
+                    'eno'=>$student->upi_no,//work number
+                    'idcard'=>'stream',//ID number-use as stream
+                    'cardid'=>'class '.$student->class,//card number-use as class
+                    'uuid'=>$student->id,//uuid
+                    'name'=>$student->first_name.' '.$student->surname,//names
+                    'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                ]);
+
+            }else if(isset($student->staff_id)){
             array_push($formated_students, (object)[
-                'eno'=>$student->upi_no,//work number
-                'idcard'=>$student->getStream->name,//ID number-use as stream
-                'cardid'=>$student->class,//card number-use as class
+                'eno'=>$student->staff_id,//work number
+                'idcard'=>'staff',//ID number-use as stream
+                'cardid'=>$student->id,//card number-use as class
                 'uuid'=>$student->id,//uuid
-                'name'=>$student->first_name.' '.$student->surname,//names
+                'name'=>$student->fname.' '.$student->surname,//names
                 'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
-            ]);
+            ]);}
         }
         $data=[
             'employeeList'=> $formated_students,
