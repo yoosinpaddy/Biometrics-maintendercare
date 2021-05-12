@@ -250,7 +250,7 @@ class DeviceRecordController extends Controller
                     'idcard'=>'stream',//ID number-use as stream
                     'cardid'=>'class '.$student->class,//card number-use as class
                     'uuid'=>$student->id,//uuid
-                    'name'=>$student->name,//names
+                    'name'=>$student->name.' (class '.$student->class.')',//names
                     'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                 ]);
 
