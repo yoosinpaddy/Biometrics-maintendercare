@@ -419,13 +419,13 @@ if($templetes->save()){
         $title = '';
         if($request->type=='teaching'){
             $title = 'Teaching';
-            $staffRecords = StaffFaceRecord::where('staff_face_records.status','=','enter')->where('time_taken','>',$myvar)
+            $staffRecords = StaffFaceRecord::whereNotNull('staff_face_records.status')->where('time_taken','>',$myvar)
             ->where('time_taken','<',$myvar2)
             ->where('staff_type','=','teaching')
             ->orderBy('staff_face_records.created_at', 'ASC')->paginate(300);
         }else{
             $title = 'Teaching';
-            $staffRecords = StaffFaceRecord::where('staff_face_records.status','=','enter')->where('time_taken','>',$myvar)
+            $staffRecords = StaffFaceRecord::whereNotNull('staff_face_records.status')->where('time_taken','>',$myvar)
             ->where('time_taken','<',$myvar2)
             ->where('staff_type','!=','teaching')
             ->orderBy('staff_face_records.created_at', 'ASC')->paginate(300);
