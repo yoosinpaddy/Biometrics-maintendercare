@@ -47,6 +47,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/initialize', [InitializeController::class, 'initialize'])->name('school.initialize');
     Route::get('/templetes', [StudentController::class, 'templetes'])->name('sms.templete');
     Route::post('/templetesUpdate', [StudentController::class, 'templetesUpdate'])->name('sms.templetesUpdate');
+    Route::post('/uploadCsv', [StudentController::class, 'uploadCsv'])->name('uploadCsv');
+    Route::get('/uploadCsv', [StudentController::class, 'uploadCsv'])->name('uploadCsv');
 });
 
 Route::get('/', function () {

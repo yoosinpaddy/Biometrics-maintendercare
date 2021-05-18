@@ -20,7 +20,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Theme style -->
-    <link rel="stylesheet" href="{{route('default')}}/dist/css/adminlte.min.css"><!-- Toastr -->
+    <link rel="stylesheet" href="{{route('default')}}/dist/css/adminlte.min.css">
+    <!-- Toastr -->
     <link rel="stylesheet" href="{{route('default')}}/plugins/toastr/toastr.min.css">
     <style>
         /*
@@ -39,10 +40,7 @@
         .datepicker {
             margin-bottom: 3rem;
         }
-
-
-
-        </style>
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -225,8 +223,8 @@
                                                 <th>Time(event)</th>
                                             </tr>
                                         </tfoot>
-                                    </table>
-                                    <div class="row">{{ $myRecords->links('pagination::bootstrap-4') }}</div>
+                                        </table>
+                                        <div class="row">{{ $myRecords->links('pagination::bootstrap-4') }}</div>
 
                                 </div>
                                 <!-- /.card-body -->

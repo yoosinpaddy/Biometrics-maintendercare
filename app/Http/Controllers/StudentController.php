@@ -11,6 +11,7 @@ use App\Models\Stream;
 use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -386,6 +387,187 @@ if($stream->save()){
         $templetes=Smstemplete::paginate(100);
         return view('school.templete', ['templetes' => $templetes]);
     }
+    public function uploadCsv(Request $request)
+    {
+        if ($request->method() == 'GET') {
+            return view('school.upload', []);
+        }
+        $file = $request->file('csv');
+
+        // File Details
+        $filename = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $tempPath = $file->getRealPath();
+        $fileSize = $file->getSize();
+        $mimeType = $file->getMimeType();
+        // Valid File Extensions
+        $valid_extension = array("csv");
+
+        // 2MB in Bytes
+        $maxFileSize = 2097152;
+
+        // Check file size
+        if($fileSize <= $maxFileSize){
+
+            // File upload location
+            $location = 'uploads';
+
+            // Upload file
+            $file->move($location,$filename);
+
+            // Import CSV to Database
+            $filepath = public_path($location."/".$filename);
+
+            // Reading file
+            $file = fopen($filepath,"r");
+
+            $importData_arr = array();
+            $i = 0;
+
+            while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
+               $num = count($filedata );
+
+               // Skip first row (Remove below comment if you want to skip the first row)
+               if($i == 0){
+                  $i++;
+                  continue;
+               }
+               for ($c=0; $c < $num; $c++) {
+                  $importData_arr[$i][] = $filedata [$c];
+               }
+               $i++;
+            }
+            fclose($file);
+
+            // Insert to MySQL database
+
+            $json = json_encode($importData_arr);
+
+                $errors=array();
+             // Insert to MySQL database
+            foreach($importData_arr as $importData){
+                $upi=trim($importData[0]);
+                $fname=trim($importData[1]);
+                $v=explode(" ",trim($importData[2]));
+                if(sizeof($v)==2){
+                    $surname=$v[1];
+                    $mname=$v[0];
+                }else{
+                    $surname=$v[0];
+                    $mname="";
+                }
+                $class=trim($importData[3]);
+                $stream=trim($importData[4]);
+                //process stream
+                $rstream=$this->getMyStream($stream);
+                //if student exists
+                if (sizeof(Student::where('upi_no', '=', $upi)->get()) > 0) {
+                    array_push($errors,'UPI already exists exist');
+
+                }else{
+                    //insert student user
+                    $user = new User();
+                    $user->name = $fname. ' ' . $surname;
+                    $user->save();
+                    $student = new Student();
+                    $student->upi_no = $upi;
+                    $student->user_id = $user->id;
+                    $student->first_name = $fname;
+                    $student->surname = $surname;
+                    $student->class = $class;
+                    $student->class_year = date("Y");
+                    $student->stream = $rstream;
+                    if ($mname != null || $mname != "") {
+                        $student->middle_name = $mname;
+                    }
+                    $student->save();
+
+                    //if father is present
+                    if(trim($importData[5])!==""){
+                        $ffname=trim($importData[5]);
+                        $fsname=trim($importData[6]);
+                        $fphone=trim($importData[7]);
+                        //insert father user
+                        $user2 = new User();
+                        if (sizeof(User::where('phone', '=', $fphone)->get()) > 0) {
+                            $user2 = User::where('phone', '=', $fphone)->limit(1)->get()->first();
+                        }
+                        $user2->name = $ffname. ' ' . $fsname;
+                        $user2->phone = $fphone;
+                        $user2->save();
+                        // dd($user->id);
+                        //add to guardian table
+                        $guardian = new Guardian();
+                        $guardian->user_id = $user2->id;
+                        $guardian->student_id =  $student->id;
+                        $guardian->phone = $fphone;
+                        $guardian->fname = $ffname;
+                        $guardian->surname = $fsname;
+                        $guardian->type = "father";
+                        if (sizeof(Guardian::where('student_id', '=', $student->id)->where('phone', '=', $fphone)->get()) > 0) {
+                            // return back()->with('success', 'Parent added successfully');
+                        }
+                        if ($guardian->save()) {
+                            // return back()->with('success', 'Parent added successfully');
+                        }else{
+                            array_push($errors,'father failed');
+                        }
+                    }
+                    //if mother is present
+                    if(trim($importData[8])!==""){
+                        $mfname=trim($importData[8]);
+                        $msname=trim($importData[9]);
+                        $mphone=trim($importData[10]);
+                        //insert mother user
+                        $user2 = new User();
+                        if (sizeof(User::where('phone', '=', $mphone)->get()) > 0) {
+                            $user2 = User::where('phone', '=', $mphone)->limit(1)->get()->first();
+                        }
+                        $user2->name = $mfname. ' ' . $msname;
+                        $user2->phone = $mphone;
+                        $user2->save();
+                        // dd($user->id);
+                        //add to guardian table
+                        $guardian = new Guardian();
+                        $guardian->user_id = $user2->id;
+                        $guardian->student_id =  $student->id;
+                        $guardian->phone = $mphone;
+                        $guardian->fname = $mfname;
+                        $guardian->surname = $msname;
+                        $guardian->type = "mother";
+                        if (sizeof(Guardian::where('student_id', '=', $student->id)->where('phone', '=', $mphone)->get()) > 0) {
+                            // return back()->with('success', 'Parent added successfully');
+                        }
+                        if ($guardian->save()) {
+                            // return back()->with('success', 'Parent added successfully');
+                        }else{
+                            array_push($errors,'father failed');
+                        }
+                    }
+                }
+
+
+            }
+
+                return "done";
+            // return $json;
+          }else{
+            // Session::flash('message','File too large. File must be less than 2MB.');
+          }
+    }
+    function getMyStream($request){
+        $stream=Stream::where('name','=',$request)->first();
+        if($stream!=null){
+            return $stream->id;
+        }
+        $stream=new Stream();
+        $stream->name=$request;
+        if($stream->save()){
+            return $stream->id;
+        }
+        return 0;
+    }
+
     public function templetesUpdate(Request $request)
     {
         $validate = $request->validate([
@@ -398,15 +580,15 @@ if($stream->save()){
         }else{
             $templetes->content=$request->content;
         }
-if($templetes->save()){
-    return back()->with('success', 'Updated successfully');
+        if($templetes->save()){
+            return back()->with('success', 'Updated successfully');
 
-}else{
-    return back()->withErrors([
-    'error' => 'Something went wrong',
-]);
+        }else{
+            return back()->withErrors([
+            'error' => 'Something went wrong',
+        ]);
 
-}
+        }
         return view('school.templete', ['templetes' => $templetes]);
     }
     public function staff(Request $request)
