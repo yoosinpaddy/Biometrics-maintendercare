@@ -357,42 +357,42 @@ class DeviceRecordController extends Controller
             $templete1=Smstemplete::where('id','=',2)->get()->pluck('content');
             $message1="Dear $guardian->fname, your child ".$face_record->student->first_name." ".$face_record->student->surname." UPI:".$face_record->student->upi_no." has left school for home at $new_time with a temperature of $temp ° ". $templete1[0];
         }
-// dd($new_time);
-        $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
-            'apikey'=>$_ENV['SMS_API_KEY'],
-            'partnerID'=>$_ENV['SMS_PATNER_ID'],
-            'shortcode'=>$_ENV['SMS_SHORT_CODE'],
-            'message'=>$message1,
-            'mobile'=>$guardian->phone,
-        ]);
-        if($response->successful()){
-            // dd($response->json()['responses'][0]['response-description']);
-            // return back()->with('success', $response->json()['responses'][0]['response-description']);
-        }
 
-        // Determine if the status code is >= 400...
-        if($response->failed()){
+        // $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
+        //     'apikey'=>$_ENV['SMS_API_KEY'],
+        //     'partnerID'=>$_ENV['SMS_PATNER_ID'],
+        //     'shortcode'=>$_ENV['SMS_SHORT_CODE'],
+        //     'message'=>$message1,
+        //     'mobile'=>$guardian->phone,
+        // ]);
+        // if($response->successful()){
+        //     // dd($response->json()['responses'][0]['response-description']);
+        //     // return back()->with('success', $response->json()['responses'][0]['response-description']);
+        // }
 
-            // return back()->withErrors([
-            //     'message' => 'Something went wrong, could not send sms',
-            // ]);
-        }
+        // // Determine if the status code is >= 400...
+        // if($response->failed()){
 
-        // Determine if the response has a 400 level status code...
-        if($response->clientError()){
+        //     // return back()->withErrors([
+        //     //     'message' => 'Something went wrong, could not send sms',
+        //     // ]);
+        // }
 
-            // return back()->withErrors([
-            //     'message' => 'Something went wrong, could not send sms',
-            // ]);
-        }
+        // // Determine if the response has a 400 level status code...
+        // if($response->clientError()){
 
-        // Determine if the response has a 500 level status code...
-        if($response->serverError()){
+        //     // return back()->withErrors([
+        //     //     'message' => 'Something went wrong, could not send sms',
+        //     // ]);
+        // }
 
-            // return back()->withErrors([
-            //     'message' => 'Something went wrong, could not send sms',
-            // ]);
-        }
+        // // Determine if the response has a 500 level status code...
+        // if($response->serverError()){
+
+        //     // return back()->withErrors([
+        //     //     'message' => 'Something went wrong, could not send sms',
+        //     // ]);
+        // }
 
     }
 }
