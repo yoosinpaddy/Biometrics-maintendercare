@@ -227,7 +227,7 @@ class DeviceRecordController extends Controller
             $pageNumber=$request->pageNumber;
         }
         $students_count=Student::withTrashed()->where('class','!=','9')->get();
-        $students=Student::withTrashed()->where('class','!=','9')->paginate(100, ['*'], 'page', $pageNumber);
+        // $students=Student::withTrashed()->where('class','!=','9')->paginate(100, ['*'], 'page', $pageNumber);
 
         $users = User::withTrashed()
         ->leftJoin('students', function ($join) {
@@ -238,21 +238,23 @@ class DeviceRecordController extends Controller
             ->leftJoin('staff', 'users.id', '=', 'staff.user_id')
             ->select('users.*', 'students.upi_no', 'students.class', 'staff.staff_id')
             ->where('users.password','=',null)
-            // ->get();
-            ->paginate(100, ['*'], 'page', $pageNumber);
+            ->get();
+            // ->paginate(100, ['*'], 'page', $pageNumber);
 
         // dd($users);
         $formated_students=[];
         foreach ($users as $student) {
             if(isset($student->upi_no)){
-                array_push($formated_students, (object)[
-                    'eno'=>$student->upi_no,//work number
-                    'idcard'=>'stream',//ID number-use as stream
-                    'cardid'=>'class '.$student->class,//card number-use as class
-                    'uuid'=>$student->id,//uuid
-                    'name'=>$student->name.' (class '.$student->class.')',//names
-                    'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
-                ]);
+                if($student->class!=9){
+                    array_push($formated_students, (object)[
+                        'eno'=>$student->upi_no,//work number
+                        'idcard'=>'stream',//ID number-use as stream
+                        'cardid'=>'class '.$student->class,//card number-use as class
+                        'uuid'=>$student->id,//uuid
+                        'name'=>$student->name.' (class '.$student->class.')',//names
+                        'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                    ]);
+                }
 
             }else if(isset($student->staff_id)){
             array_push($formated_students, (object)[
@@ -262,12 +264,16 @@ class DeviceRecordController extends Controller
                 'uuid'=>$student->id,//uuid
                 'name'=>$student->name,//names
                 'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
-            ]);}
+            ]);}else{
+                // array_push($formated_students, (object)[
+                //     'NA'=>$student->id
+                //      ]);
+            }
         }
         $data=[
             'employeeList'=> $formated_students,
-            'count'=>100,//People List page size (get the people list by page, this is the pageSize per page)
-            'sum'=>sizeof($students_count),//Total number of records in the population list
+            'count'=>sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
+            'sum'=>sizeof($formated_students),//Total number of records in the population list
         ];
         $myResponse=json_encode([
             'code'=>200,
