@@ -416,11 +416,11 @@ class StudentController extends Controller
 
             // Import CSV to Database
             $filepath = public_path($location . "/" . $filename);
-            $path = getcwd().$location . "/" . $filename;
+            $path = getcwd(). "/".$location . "/" . $filename;
             $path2 = __DIR__.$location . "/" . $filename;
-            dd($filepath,$path,$path2);
+            // dd($filepath,$path,$path2);
             // Reading file
-            $file = fopen($filepath, "r");
+            $file = fopen($path, "r");
 
             $importData_arr = array();
             $i = 0;
