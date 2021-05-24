@@ -461,8 +461,8 @@ class StudentController extends Controller
                 $rstream = $this->getMyStream($stream);
                 //if student exists
                 if (sizeof(Student::where('upi_no', '=', $upi)->get()) > 0) {
-                    $st = Student::where('upi_no', '=', $upi)->limit(1)->get()->first();
-                    $user = User::where('id', '=', $st->user_id)->limit(1)->get()->first();
+                    $student = Student::where('upi_no', '=', $upi)->limit(1)->get()->first();
+                    $user = User::where('id', '=', $student->user_id)->limit(1)->get()->first();
                 } else {
                     //insert student user
                     $user = new User();
