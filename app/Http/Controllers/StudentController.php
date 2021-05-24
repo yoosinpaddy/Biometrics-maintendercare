@@ -295,7 +295,7 @@ class StudentController extends Controller
         $student = Student::where('id', '=', $request->student_id)->get()->first();
 
 
-        if ($request->upi_no!=$student->upi_no&&sizeof(Student::where('upi_no', '=', $request->upi_no)->get()) > 0) {
+        if ($request->upi_no != $student->upi_no && sizeof(Student::where('upi_no', '=', $request->upi_no)->get()) > 0) {
             // dd($request->upi_no.$student->upi_no);
             return back()->withErrors([
                 'upi_no' => 'UPI already exists exist',
@@ -325,19 +325,19 @@ class StudentController extends Controller
             'stream' => ['required', 'max:255'],
             'day' => ['required', 'max:255'],
         ]);
-        return redirect()->route('school.detailedReports', ['class' => $request->class, 'stream' => $request->stream,'day'=>$request->day]);
+        return redirect()->route('school.detailedReports', ['class' => $request->class, 'stream' => $request->stream, 'day' => $request->day]);
     }
     public function staffReportsPoster(Request $request)
     {
         $validate = $request->validate([
             'day' => ['required', 'max:255'],
         ]);
-        return redirect()->route('staff.reports', ['day'=>$request->day,'type'=>$request->type]);
+        return redirect()->route('staff.reports', ['day' => $request->day, 'type' => $request->type]);
     }
 
     public function streams(Request $request)
     {
-        $streams=Stream::paginate(100);
+        $streams = Stream::paginate(100);
         return view('school.streams', ['streams' => $streams]);
     }
 
@@ -346,12 +346,12 @@ class StudentController extends Controller
         $validate = $request->validate([
             'name' => ['required', 'max:255'],
         ]);
-        $stream=new Stream();
-$stream->name=$request->name;
-if($stream->save()){
+        $stream = new Stream();
+        $stream->name = $request->name;
+        if ($stream->save()) {
 
-    return back()->with('success', 'Added successfully');
-}
+            return back()->with('success', 'Added successfully');
+        }
     }
     public function streamsUpdate(Request $request)
     {
@@ -359,19 +359,18 @@ if($stream->save()){
             'name' => ['required', 'max:255'],
             'id' => ['required', 'max:255'],
         ]);
-        $stream=Stream::where('id','=',$request->id)->first();
-        if($stream==null){
+        $stream = Stream::where('id', '=', $request->id)->first();
+        if ($stream == null) {
             return back()->withErrors([
-            'error' => 'Something went wrong',
-        ]);
+                'error' => 'Something went wrong',
+            ]);
+        } else {
+            $stream->name = $request->name;
 
-        }else{
-$stream->name=$request->name;
+            if ($stream->save()) {
 
-if($stream->save()){
-
-    return back()->with('success', 'Added successfully');
-}
+                return back()->with('success', 'Added successfully');
+            }
         }
     }
     public function studentsPoster(Request $request)
@@ -384,7 +383,7 @@ if($stream->save()){
     }
     public function templetes(Request $request)
     {
-        $templetes=Smstemplete::paginate(100);
+        $templetes = Smstemplete::paginate(100);
         return view('school.templete', ['templetes' => $templetes]);
     }
     public function uploadCsv(Request $request)
@@ -407,35 +406,35 @@ if($stream->save()){
         $maxFileSize = 2097152;
 
         // Check file size
-        if($fileSize <= $maxFileSize){
+        if ($fileSize <= $maxFileSize) {
 
             // File upload location
             $location = 'uploads';
 
             // Upload file
-            $file->move($location,$filename);
+            $file->move($location, $filename);
 
             // Import CSV to Database
-            $filepath = public_path($location."/".$filename);
+            $filepath = public_path($location . "/" . $filename);
 
             // Reading file
-            $file = fopen($filepath,"r");
+            $file = fopen($filepath, "r");
 
             $importData_arr = array();
             $i = 0;
 
             while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
-               $num = count($filedata );
+                $num = count($filedata);
 
-               // Skip first row (Remove below comment if you want to skip the first row)
-               if($i == 0){
-                  $i++;
-                  continue;
-               }
-               for ($c=0; $c < $num; $c++) {
-                  $importData_arr[$i][] = $filedata [$c];
-               }
-               $i++;
+                // Skip first row (Remove below comment if you want to skip the first row)
+                if ($i == 0) {
+                    $i++;
+                    continue;
+                }
+                for ($c = 0; $c < $num; $c++) {
+                    $importData_arr[$i][] = $filedata[$c];
+                }
+                $i++;
             }
             fclose($file);
 
@@ -443,126 +442,133 @@ if($stream->save()){
 
             $json = json_encode($importData_arr);
 
-                $errors=array();
-             // Insert to MySQL database
-            foreach($importData_arr as $importData){
-                $upi=trim($importData[0]);
-                $fname=trim($importData[1]);
-                $v=explode(" ",trim($importData[2]));
-                if(sizeof($v)==2){
-                    $surname=$v[1];
-                    $mname=$v[0];
-                }else{
-                    $surname=$v[0];
-                    $mname="";
+            $errors = array();
+            // Insert to MySQL database
+            foreach ($importData_arr as $importData) {
+                $upi = trim($importData[0]);
+                $fname = trim($importData[1]);
+                $v = explode(" ", trim($importData[2]));
+                if (sizeof($v) == 2) {
+                    $surname = $v[1];
+                    $mname = $v[0];
+                } else {
+                    $surname = $v[0];
+                    $mname = "";
                 }
-                $class=trim($importData[3]);
-                $stream=trim($importData[4]);
+                $class = trim($importData[3]);
+                $stream = trim($importData[4]);
                 //process stream
-                $rstream=$this->getMyStream($stream);
+                $rstream = $this->getMyStream($stream);
                 //if student exists
                 if (sizeof(Student::where('upi_no', '=', $upi)->get()) > 0) {
-                    array_push($errors,'UPI already exists exist');
-
-                }else{
+                    $st = Student::where('upi_no', '=', $upi)->limit(1)->get()->first();
+                    $user = User::where('id', '=', $st->user_id)->limit(1)->get()->first();
+                } else {
                     //insert student user
                     $user = new User();
-                    $user->name = $fname. ' ' . $surname;
+                    $user->name = $fname . ' ' . $surname;
                     $user->save();
                     $student = new Student();
-                    $student->upi_no = $upi;
-                    $student->user_id = $user->id;
-                    $student->first_name = $fname;
-                    $student->surname = $surname;
-                    $student->class = $class;
-                    $student->class_year = date("Y");
-                    $student->stream = $rstream;
-                    if ($mname != null || $mname != "") {
-                        $student->middle_name = $mname;
-                    }
-                    $student->save();
+                }
+                $student->upi_no = $upi;
+                $student->user_id = $user->id;
+                $student->first_name = $fname;
+                $student->surname = $surname;
+                $student->class = $class;
+                $student->class_year = date("Y");
+                $student->stream = $rstream;
+                if ($mname != null || $mname != "") {
+                    $student->middle_name = $mname;
+                }
+                $student->save();
 
-                    //if father is present
-                    if(trim($importData[5])!==""){
-                        $ffname=trim($importData[5]);
-                        $fsname=trim($importData[6]);
-                        $fphone=trim($importData[7]);
-                        //insert father user
-                        $user2 = new User();
-                        if (sizeof(User::where('phone', '=', $fphone)->get()) > 0) {
-                            $user2 = User::where('phone', '=', $fphone)->limit(1)->get()->first();
-                        }
-                        $user2->name = $ffname. ' ' . $fsname;
-                        $user2->phone = $fphone;
-                        $user2->save();
-                        // dd($user->id);
-                        //add to guardian table
-                        $guardian = new Guardian();
-                        $guardian->user_id = $user2->id;
-                        $guardian->student_id =  $student->id;
-                        $guardian->phone = $fphone;
-                        $guardian->fname = $ffname;
-                        $guardian->surname = $fsname;
-                        $guardian->type = "father";
-                        if (sizeof(Guardian::where('student_id', '=', $student->id)->where('phone', '=', $fphone)->get()) > 0) {
-                            // return back()->with('success', 'Parent added successfully');
-                        }
-                        if ($guardian->save()) {
-                            // return back()->with('success', 'Parent added successfully');
-                        }else{
-                            array_push($errors,'father failed');
-                        }
+                //if father is present
+                if (trim($importData[5]) !== "") {
+                    $ffname = trim($importData[5]);
+                    $fsname = trim($importData[6]);
+                    $fphone = $this->getPhone(trim($importData[7]));
+                    //insert father user
+                    $user2 = new User();
+                    if (sizeof(User::where('phone', '=', $fphone)->get()) > 0) {
+                        $user2 = User::where('phone', '=', $fphone)->limit(1)->get()->first();
                     }
-                    //if mother is present
-                    if(trim($importData[8])!==""){
-                        $mfname=trim($importData[8]);
-                        $msname=trim($importData[9]);
-                        $mphone=trim($importData[10]);
-                        //insert mother user
-                        $user2 = new User();
-                        if (sizeof(User::where('phone', '=', $mphone)->get()) > 0) {
-                            $user2 = User::where('phone', '=', $mphone)->limit(1)->get()->first();
-                        }
-                        $user2->name = $mfname. ' ' . $msname;
-                        $user2->phone = $mphone;
-                        $user2->save();
-                        // dd($user->id);
-                        //add to guardian table
-                        $guardian = new Guardian();
-                        $guardian->user_id = $user2->id;
-                        $guardian->student_id =  $student->id;
-                        $guardian->phone = $mphone;
-                        $guardian->fname = $mfname;
-                        $guardian->surname = $msname;
-                        $guardian->type = "mother";
-                        if (sizeof(Guardian::where('student_id', '=', $student->id)->where('phone', '=', $mphone)->get()) > 0) {
-                            // return back()->with('success', 'Parent added successfully');
-                        }
-                        if ($guardian->save()) {
-                            // return back()->with('success', 'Parent added successfully');
-                        }else{
-                            array_push($errors,'father failed');
-                        }
+                    $user2->name = $ffname . ' ' . $fsname;
+                    $user2->phone = $fphone;
+                    $user2->save();
+                    // dd($user->id);
+                    //add to guardian table
+                    $guardian = new Guardian();
+                    $guardian->user_id = $user2->id;
+                    $guardian->student_id =  $student->id;
+                    $guardian->phone = $fphone;
+                    $guardian->fname = $ffname;
+                    $guardian->surname = $fsname;
+                    $guardian->type = "father";
+                    if (sizeof(Guardian::where('student_id', '=', $student->id)->where('phone', '=', $fphone)->get()) > 0) {
+                        // return back()->with('success', 'Parent added successfully');
+                    }
+                    if ($guardian->save()) {
+                        // return back()->with('success', 'Parent added successfully');
+                    } else {
+                        array_push($errors, 'father failed');
                     }
                 }
-
-
+                //if mother is present
+                if (trim($importData[8]) !== "") {
+                    $mfname = trim($importData[8]);
+                    $msname = trim($importData[9]);
+                    $mphone = $this->getPhone(trim($importData[10]));
+                    //insert mother user
+                    $user2 = new User();
+                    if (sizeof(User::where('phone', '=', $mphone)->get()) > 0) {
+                        $user2 = User::where('phone', '=', $mphone)->limit(1)->get()->first();
+                    }
+                    $user2->name = $mfname . ' ' . $msname;
+                    $user2->phone = $mphone;
+                    $user2->save();
+                    // dd($user->id);
+                    //add to guardian table
+                    $guardian = new Guardian();
+                    $guardian->user_id = $user2->id;
+                    $guardian->student_id =  $student->id;
+                    $guardian->phone = $mphone;
+                    $guardian->fname = $mfname;
+                    $guardian->surname = $msname;
+                    $guardian->type = "mother";
+                    if (sizeof(Guardian::where('student_id', '=', $student->id)->where('phone', '=', $mphone)->get()) > 0) {
+                        // return back()->with('success', 'Parent added successfully');
+                    }
+                    if ($guardian->save()) {
+                        // return back()->with('success', 'Parent added successfully');
+                    } else {
+                        array_push($errors, 'father failed');
+                    }
+                }
             }
 
-                return "done";
+            return "done";
             // return $json;
-          }else{
+        } else {
             // Session::flash('message','File too large. File must be less than 2MB.');
-          }
+        }
     }
-    function getMyStream($request){
-        $stream=Stream::where('name','=',$request)->first();
-        if($stream!=null){
+    function getPhone($v)
+    {
+
+        if (str_split($v)[0] === "7" || str_split($v)[0] === "1") {
+            return "0" . $v;
+        }
+        return $v;
+    }
+    function getMyStream($request)
+    {
+        $stream = Stream::where('name', '=', $request)->first();
+        if ($stream != null) {
             return $stream->id;
         }
-        $stream=new Stream();
-        $stream->name=$request;
-        if($stream->save()){
+        $stream = new Stream();
+        $stream->name = $request;
+        if ($stream->save()) {
             return $stream->id;
         }
         return 0;
@@ -574,20 +580,18 @@ if($stream->save()){
             'id' => ['required', 'max:255'],
         ]);
 
-        $templetes=Smstemplete::where('id','=',$request->id)->first();
-        if($request->content==null||$request->content==""){
-            $templetes->content="";
-        }else{
-            $templetes->content=$request->content;
+        $templetes = Smstemplete::where('id', '=', $request->id)->first();
+        if ($request->content == null || $request->content == "") {
+            $templetes->content = "";
+        } else {
+            $templetes->content = $request->content;
         }
-        if($templetes->save()){
+        if ($templetes->save()) {
             return back()->with('success', 'Updated successfully');
-
-        }else{
+        } else {
             return back()->withErrors([
-            'error' => 'Something went wrong',
-        ]);
-
+                'error' => 'Something went wrong',
+            ]);
         }
         return view('school.templete', ['templetes' => $templetes]);
     }
@@ -599,27 +603,26 @@ if($stream->save()){
         $myvar2 = strtotime('+24 hours', strtotime($day)) * 1000;
 
         $title = '';
-        if($request->type=='teaching'){
+        if ($request->type == 'teaching') {
             $title = 'Teaching';
-            $staffRecords = StaffFaceRecord::whereNotNull('staff_face_records.status')->where('time_taken','>',$myvar)
-            ->where('time_taken','<',$myvar2)
-            ->where('staff_type','=','teaching')
-            ->orderBy('staff_face_records.created_at', 'ASC')->paginate(300);
-        }else{
+            $staffRecords = StaffFaceRecord::whereNotNull('staff_face_records.status')->where('time_taken', '>', $myvar)
+                ->where('time_taken', '<', $myvar2)
+                ->where('staff_type', '=', 'teaching')
+                ->orderBy('staff_face_records.created_at', 'ASC')->paginate(300);
+        } else {
             $title = 'Teaching';
-            $staffRecords = StaffFaceRecord::whereNotNull('staff_face_records.status')->where('time_taken','>',$myvar)
-            ->where('time_taken','<',$myvar2)
-            ->where('staff_type','!=','teaching')
-            ->orderBy('staff_face_records.created_at', 'ASC')->paginate(300);
-
+            $staffRecords = StaffFaceRecord::whereNotNull('staff_face_records.status')->where('time_taken', '>', $myvar)
+                ->where('time_taken', '<', $myvar2)
+                ->where('staff_type', '!=', 'teaching')
+                ->orderBy('staff_face_records.created_at', 'ASC')->paginate(300);
         }
 
-        return view('staff.reports', [ 'staffRecords' => $staffRecords,
-             'title' => $title,
-             'type' => $request->type,
+        return view('staff.reports', [
+            'staffRecords' => $staffRecords,
+            'title' => $title,
+            'type' => $request->type,
             'day' => $day,
         ]);
-
     }
     public function reports(Request $request)
     {
@@ -721,17 +724,17 @@ if($stream->save()){
                 $allStudents = Student::where('class', '=', $request->class)->where('stream', '=', $request->stream)->paginate(300);
 
                 $myRecords = FaceRecord::join('students', function ($join) {
-                        $join->on('students.upi_no', '=', 'face_records.upi_no');
-                    })->where('time_taken','>',$myvar)
-                    ->where('time_taken','<',$myvar2)
+                    $join->on('students.upi_no', '=', 'face_records.upi_no');
+                })->where('time_taken', '>', $myvar)
+                    ->where('time_taken', '<', $myvar2)
                     ->where('students.class', '=', $request->class)->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             } else {
                 $title = 'Class ' . $request->class;
                 $allStudents = Student::where('class', '=', $request->class)->paginate(300);
                 $myRecords = FaceRecord::join('students', function ($join) {
-                        $join->on('students.upi_no', '=', 'face_records.upi_no');
-                    })->where('time_taken','>',$myvar)
-                    ->where('time_taken','<',$myvar2)
+                    $join->on('students.upi_no', '=', 'face_records.upi_no');
+                })->where('time_taken', '>', $myvar)
+                    ->where('time_taken', '<', $myvar2)
                     ->whereNotNull('face_records.status')->where('students.class', '=', $request->class)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             }
         } else {
@@ -743,16 +746,16 @@ if($stream->save()){
                 $current_streamv = $request->stream;
                 $allStudents = Student::where('stream', '=', $request->stream)->paginate(300);
                 $myRecords = FaceRecord::join('students', function ($join) {
-                        $join->on('students.upi_no', '=', 'face_records.upi_no');
-                    })->where('time_taken','>',$myvar)
-                    ->where('time_taken','<',$myvar2)
+                    $join->on('students.upi_no', '=', 'face_records.upi_no');
+                })->where('time_taken', '>', $myvar)
+                    ->where('time_taken', '<', $myvar2)
                     ->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
             } else {
                 $title = 'All Classes in all Streams';
                 $allStudents = Student::paginate(300);
-                $myRecords = FaceRecord::whereNotNull('face_records.status')->where('time_taken','>',$myvar)
-                ->where('time_taken','<',$myvar2)
-                ->orderBy('face_records.created_at', 'ASC')->paginate(300);
+                $myRecords = FaceRecord::whereNotNull('face_records.status')->where('time_taken', '>', $myvar)
+                    ->where('time_taken', '<', $myvar2)
+                    ->orderBy('face_records.created_at', 'ASC')->paginate(300);
             }
         }
         // dd($myRecords[0]->student);
@@ -796,13 +799,13 @@ if($stream->save()){
                 $current_stream = $stream_name[0]->name;
                 $current_streamv = $request->stream;
                 $myParents = Guardian::join('students', function ($join) {
-                        $join->on('students.id', '=', 'guardians.student_id');
-                    })->where('students.class', '=', $request->class)->where('students.stream', '=', $request->stream)->get();
+                    $join->on('students.id', '=', 'guardians.student_id');
+                })->where('students.class', '=', $request->class)->where('students.stream', '=', $request->stream)->get();
             } else {
                 $title = 'Class ' . $request->class;
                 $myParents = Guardian::join('students', function ($join) {
                     $join->on('students.id', '=', 'guardians.student_id');
-                    })->where('students.class', '=', $request->class)->get();
+                })->where('students.class', '=', $request->class)->get();
             }
         } else {
             if ($request->stream != 'all') {
@@ -812,8 +815,8 @@ if($stream->save()){
                 $current_stream = $stream_name[0]->name;
                 $current_streamv = $request->stream;
                 $myParents = Guardian::join('students', function ($join) {
-                        $join->on('students.id', '=', 'guardians.student_id');
-                    })->where('students.stream', '=', $request->stream)->get();
+                    $join->on('students.id', '=', 'guardians.student_id');
+                })->where('students.stream', '=', $request->stream)->get();
             } else {
                 $title = 'All Classes in all Streams';
                 $myParents = Guardian::all();
@@ -826,9 +829,10 @@ if($stream->save()){
         return back()->with('success', 'Messages sent successfully');
     }
     public function bulk_sms(Request $request)
-    {$classes = Student::select('class')->where('class', '!=', '9')->groupBy('class')->get();
+    {
+        $classes = Student::select('class')->where('class', '!=', '9')->groupBy('class')->get();
         $streams = Stream::all();
-        return view('school.sendSms',['classes' => $classes, 'streams' => $streams,]);
+        return view('school.sendSms', ['classes' => $classes, 'streams' => $streams,]);
     }
 
     public function classReports(Request $request)
@@ -926,17 +930,19 @@ if($stream->save()){
             }
         }
         // dd($allStudents[1]->getStream);
-        return view('school.students', ['allStudents' => $allStudents,
-        'current_class' => $current_class,
-        'current_stream' => $current_stream,
-        'current_streamv' => $current_streamv,
-        'classes' => $classes,
-        'streams' => $streams,'title'=>$title]);
+        return view('school.students', [
+            'allStudents' => $allStudents,
+            'current_class' => $current_class,
+            'current_stream' => $current_stream,
+            'current_streamv' => $current_streamv,
+            'classes' => $classes,
+            'streams' => $streams, 'title' => $title
+        ]);
     }
     public function delete(Request $request)
     {
-        $guardian=Guardian::where('id','=',$request->student_id)->first();
-        if($guardian->delete()){
+        $guardian = Guardian::where('id', '=', $request->student_id)->first();
+        if ($guardian->delete()) {
             return back()->with('success', 'Parent deleted successfully');
         }
         return back()->withErrors([
@@ -1008,30 +1014,31 @@ if($stream->save()){
     {
         //
     }
-    public function sendSms($guardian,$message){
-// dd($guardian->phone);
-        $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
-            'apikey'=>$_ENV['SMS_API_KEY'],
-            'partnerID'=>$_ENV['SMS_PATNER_ID'],
-            'shortcode'=>$_ENV['SMS_SHORT_CODE'],
-            'message'=>$message,
-            'mobile'=>$guardian->phone,
+    public function sendSms($guardian, $message)
+    {
+        // dd($guardian->phone);
+        $response = Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms', [
+            'apikey' => $_ENV['SMS_API_KEY'],
+            'partnerID' => $_ENV['SMS_PATNER_ID'],
+            'shortcode' => $_ENV['SMS_SHORT_CODE'],
+            'message' => $message,
+            'mobile' => $guardian->phone,
         ]);
-        if($response->successful()){
+        if ($response->successful()) {
             // dd($response->json()['responses'][0]['response-description']);
             return back()->with('success', $response->json()['responses'][0]['response-description']);
         }
 
         // Determine if the status code is >= 400...
-        if($response->failed()){
-// dd($response->json()['errors']['message'][0]);
+        if ($response->failed()) {
+            // dd($response->json()['errors']['message'][0]);
             return back()->withErrors([
                 'message' => $response->json()['errors']['message'][0],
             ]);
         }
 
         // Determine if the response has a 400 level status code...
-        if($response->clientError()){
+        if ($response->clientError()) {
 
             return back()->withErrors([
                 'message' => 'Something went wrong, could not send sms',
@@ -1039,12 +1046,11 @@ if($stream->save()){
         }
 
         // Determine if the response has a 500 level status code...
-        if($response->serverError()){
+        if ($response->serverError()) {
 
             return back()->withErrors([
                 'message' => 'Something went wrong, could not send sms',
             ]);
         }
-
     }
 }
