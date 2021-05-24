@@ -88,6 +88,7 @@ Route::post('/device/{school_id}/recordUpload', [DeviceRecordController::class, 
 
 Route::get('/device/{school_id}/dataPull', [DeviceRecordController::class, 'dataPullg']);
 Route::post('/device/{school_id}/dataPull', [DeviceRecordController::class, 'dataPull']);
+Route::post('/device/{school_id}/dataPullT', [DeviceRecordController::class, 'dataPullT']);
 
 Route::get('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBackg']);
 Route::post('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBack']);
