@@ -236,7 +236,7 @@ class DeviceRecordController extends Controller
         })
         // ->leftJoin('students', 'users.id', '=', 'students.user_id')
             ->leftJoin('staff', 'users.id', '=', 'staff.user_id')
-            ->select('users.*', 'students.upi_no', 'students.class', 'staff.staff_id')
+            ->select('users.*', 'students.upi_no', 'students.first_name','students.surname',  'students.class', 'staff.staff_id')
             ->where('users.password','=',null)
             ->get();
             // ->paginate(100, ['*'], 'page', $pageNumber);
@@ -245,16 +245,16 @@ class DeviceRecordController extends Controller
         $formated_students=[];
         foreach ($users as $student) {
             if(isset($student->upi_no)){
-                if($student->upi_no=="04308"){
-                    dd($student);
-                }
+                // if($student->upi_no=="04308"){
+                //     dd($student);
+                // }
                 if($student->class!=9){
                     array_push($formated_students, (object)[
                         'eno'=>$student->upi_no,//work number
                         'idcard'=>'stream',//ID number-use as stream
                         'cardid'=>'class '.$student->class,//card number-use as class
                         'uuid'=>$student->id,//uuid
-                        'name'=>$student->name.' (class '.$student->class.')',//names
+                        'name'=>$student->first_name." ".$student->surname.' (class '.$student->class.')',//names
                         'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                     ]);
                 }
