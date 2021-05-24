@@ -245,6 +245,9 @@ class DeviceRecordController extends Controller
         $formated_students=[];
         foreach ($users as $student) {
             if(isset($student->upi_no)){
+                if($student->upi_no=="04308"){
+                    dd($student);
+                }
                 if($student->class!=9){
                     array_push($formated_students, (object)[
                         'eno'=>$student->upi_no,//work number
