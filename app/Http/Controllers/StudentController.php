@@ -447,7 +447,7 @@ class StudentController extends Controller
             $errors = array();
             // Insert to MySQL database
             foreach ($importData_arr as $importData) {
-                $upi = trim($importData[0]);
+                $upi = $this->getUpi(trim($importData[0]));
                 $fname = trim($importData[1]);
                 $v = explode(" ", trim($importData[2]));
                 if (sizeof($v) == 2) {
@@ -552,6 +552,15 @@ class StudentController extends Controller
             // return $json;
         } else {
             // Session::flash('message','File too large. File must be less than 2MB.');
+        }
+    }
+    function getUpi($v)
+    {
+
+        if (str_split($v)[0] === "0"||sizeof(str_split($v))==5) {
+            return $v;
+        }else{
+            return "0" . $v;
         }
     }
     function getPhone($v)
