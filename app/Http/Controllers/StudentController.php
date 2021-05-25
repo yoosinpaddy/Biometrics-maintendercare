@@ -174,7 +174,7 @@ class StudentController extends Controller
             'type' => ['required', 'max:255'], //father,mother,guardian
         ]);
 
-        if (sizeof(User::where('id', '=', $request->student_id)->get()) == 0) {
+        if (sizeof(Student::where('id', '=', $request->student_id)->get()) == 0) {
             return back()->withErrors([
                 'student_id' => 'Student doesnot exist',
             ]);
