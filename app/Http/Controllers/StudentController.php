@@ -218,14 +218,20 @@ class StudentController extends Controller
 
 
         $user = new User();
-        if (sizeof(User::where('phone', '=', $request->phone_number)->get()) > 0) {
-            $user = User::where('phone', '=', $request->phone_number)->limit(1)->get()->first();
+        if (sizeof(User::where('phone', '=', $request->phone)->get()) > 0) {
+            $user = User::where('phone', '=', $request->phone)->first();
         }
         $user->name = $request->fname . ' ' . $request->surname;
         $user->phone = $request->phone;
         $user->save();
         // dd($user->id);
         $staff = new Staff();
+        if (sizeof(Staff::where('phone', '=', $request->phone)->get()) > 0) {
+            $staff = Staff::where('phone', '=', $request->phone)->first();
+        }
+        if (sizeof(Staff::where('staff_id', '=', $request->staff_id)->get()) > 0) {
+            $staff = Staff::where('staff_id', '=', $request->staff_id)->first();
+        }
         $staff->user_id = $user->id;
         $staff->staff_id = $request->staff_id;
         $staff->phone = $request->phone;
@@ -492,7 +498,7 @@ class StudentController extends Controller
                     //insert father user
                     $user2 = new User();
                     if (sizeof(User::where('phone', '=', $fphone)->get()) > 0) {
-                        $user2 = User::where('phone', '=', $fphone)->limit(1)->get()->first();
+                        $user2 = User::where('phone', '=', $fphone)->limit(1)->first();
                     }
                     $user2->name = $ffname . ' ' . $fsname;
                     $user2->phone = $fphone;
@@ -500,6 +506,9 @@ class StudentController extends Controller
                     // dd($user->id);
                     //add to guardian table
                     $guardian = new Guardian();
+                    if (sizeof(Guardian::where('user_id', '=', $user2->id)->get()) > 0) {
+                        $guardian = Guardian::where('user_id', '=', $user2->id)->first();
+                    }
                     $guardian->user_id = $user2->id;
                     $guardian->student_id =  $student->id;
                     $guardian->phone = $fphone;
@@ -531,6 +540,9 @@ class StudentController extends Controller
                     // dd($user->id);
                     //add to guardian table
                     $guardian = new Guardian();
+                    if (sizeof(Guardian::where('user_id', '=', $user2->id)->get()) > 0) {
+                        $guardian = Guardian::where('user_id', '=', $user2->id)->first();
+                    }
                     $guardian->user_id = $user2->id;
                     $guardian->student_id =  $student->id;
                     $guardian->phone = $mphone;
