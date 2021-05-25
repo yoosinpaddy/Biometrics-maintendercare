@@ -181,8 +181,8 @@ class StudentController extends Controller
         }
 
         $user = new User();
-        if (sizeof(User::where('phone', '=', $request->phone_number)->get()) > 0) {
-            $user = User::where('phone', '=', $request->phone_number)->limit(1)->get()->first();
+        if (sizeof(User::where('phone', '=', $request->phone)->get()) > 0) {
+            $user = User::where('phone', '=', $request->phone)->limit(1)->get()->first();
         }
         $user->name = $request->fname . ' ' . $request->surname;
         $user->phone = $request->phone;
@@ -912,7 +912,7 @@ class StudentController extends Controller
     public function getParents(Request $request)
     {
         $parents = Guardian::paginate(100);
-        $allStudents = Student::all();
+        $allStudents = Student::orderby('first_name')->get();
         //    dd($parents[0]->student);
         return view('school.parents', ['parents' => $parents, 'allStudents' => $allStudents]);
     }
