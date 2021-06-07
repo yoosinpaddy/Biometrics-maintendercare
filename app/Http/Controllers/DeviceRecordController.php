@@ -59,6 +59,30 @@ class DeviceRecordController extends Controller
         $level="Start---\n";
         $data = json_decode($request->data, TRUE)[0];
         // dd($data['eno']);
+        foreach ($data as $key1) {
+            $this->loopUpload($key1);
+        }
+        $myData=[
+            'openDoor'=>1,//Whether open relay, 0: no, 1: open
+            'tipSpeech'=>"Thanks for verifying",//Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
+            'state'=>2,//0: Display text and broadcast voice at the same time
+                        //1: Only text is displayed, no voice is broadcasted.
+                        //2: Do not display text, only voice
+            'openDoor'=>1,//Whether
+        ];
+        $myResponse=json_encode([
+            'code'=>200,
+            'success'=>true,
+            'messsage'=>'successful',
+            'data'=>$myData,
+            'stage'=>$level
+        ]);
+        return response($myResponse)
+        ->header('Content-Type', 'application/json');
+
+    }
+    public function loopUpload($data){
+        $level="Start---\n";
         $upi_no=$data['eno'];
         $time_taken=$data['scandatetime'];
         $device_serial=$data['macno'];
@@ -269,24 +293,6 @@ class DeviceRecordController extends Controller
         $record = new DeviceRecord();
         $record->data = 'recordUpload|'.implode("|",$request->all());
         $record->save();
-        $myData=[
-            'openDoor'=>1,//Whether open relay, 0: no, 1: open
-            'tipSpeech'=>"Thanks for verifying",//Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
-            'state'=>2,//0: Display text and broadcast voice at the same time
-                        //1: Only text is displayed, no voice is broadcasted.
-                        //2: Do not display text, only voice
-            'openDoor'=>1,//Whether
-        ];
-        $myResponse=json_encode([
-            'code'=>200,
-            'success'=>true,
-            'messsage'=>'successful',
-            'data'=>$myData,
-            'stage'=>$level
-        ]);
-        return response($myResponse)
-        ->header('Content-Type', 'application/json');
-
     }
     public function dataPullT(Request $request)
     {
