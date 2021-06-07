@@ -60,7 +60,7 @@ class DeviceRecordController extends Controller
         $data = json_decode($request->data, TRUE);
         // dd($data['eno']);
         foreach ($data as $key1) {
-            $this->loopUpload($key1);
+            $this->loopUpload($key1,$request->all());
         }
         $myData=[
             'openDoor'=>1,//Whether open relay, 0: no, 1: open
@@ -81,7 +81,7 @@ class DeviceRecordController extends Controller
         ->header('Content-Type', 'application/json');
 
     }
-    public function loopUpload($data){
+    public function loopUpload($data,$request){
         $level="Start---\n";
         $upi_no=$data['eno'];
         $time_taken=$data['scandatetime'];
@@ -291,7 +291,7 @@ class DeviceRecordController extends Controller
             $level=$level."\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
-        $record->data = 'recordUpload|'.implode("|",$request->all());
+        $record->data = 'recordUpload|'.implode("|",$request);
         $record->save();
     }
     public function dataPullT(Request $request)
