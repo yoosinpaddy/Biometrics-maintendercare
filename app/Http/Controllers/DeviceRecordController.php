@@ -57,7 +57,7 @@ class DeviceRecordController extends Controller
     public function recordUpload(Request $request)
     {
         $level="Start---\n";
-        $data = json_decode($request->data, TRUE)[0];
+        $data = json_decode($request->data, TRUE);
         // dd($data['eno']);
         foreach ($data as $key1) {
             $this->loopUpload($key1);
