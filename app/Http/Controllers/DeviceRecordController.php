@@ -56,7 +56,7 @@ class DeviceRecordController extends Controller
     }
     public function recordUpload(Request $request)
     {
-        $level="";
+        $level="Start---\n";
         $data = json_decode($request->data, TRUE)[0];
         // dd($data['eno']);
         $upi_no=$data['eno'];
@@ -84,7 +84,7 @@ class DeviceRecordController extends Controller
             // dd($student->id);
             if($student!=null){
 
-                $level.="isStudent";
+                $level=$level."\nisStudent";
                 $faceRecord=new FaceRecord();
                 $faceRecord->upi_no=$upi_no;
                 $faceRecord->time_taken=$time_taken;
@@ -95,14 +95,14 @@ class DeviceRecordController extends Controller
 
                 $guardian=Guardian::where('student_id','=',$student->id)->where('should_notify','=','true')->first();
                 if($guardian!=null){
-                    $level.="hasGuardian";
+                    $level=$level."\nhasGuardian";
                     $faceR=FaceRecord::where('upi_no','=',$upi_no)
                     ->whereDate('created_at', Carbon::today())
                     ->orderby('id','DESC')
                     ->first();
                     // dd($faceR);
                     if($faceR!=null){
-                        $level.="hasPrevFace";
+                        $level=$level."\nhasPrevFace";
                         //we have a record
                         //check if a record is already present within the past 30 minutes
                         $input=$faceR->time_taken;
@@ -110,7 +110,7 @@ class DeviceRecordController extends Controller
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
                         if($input2-$input<1){
-                            $level.="isSlessThan1Minute";
+                            $level=$level."\nisSlessThan1Minute";
 
                             // dd('<10');
                             //recent record taken
@@ -118,19 +118,19 @@ class DeviceRecordController extends Controller
                             // $faceRecord->save();
                             // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                         }else{
-                            $level.="isgreaterThan1Minute";
+                            $level=$level."\nisgreaterThan1Minute";
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                             ->whereDate('created_at', Carbon::today())
                             ->get()) ==1) {
-                                $level.="isExit";
+                                $level=$level."\nisExit";
                                 // dd('second');
                                 $faceRecord->status='exit';
                                 $faceRecord->save();
                                 $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                             }else{
-                                $level.="isMore than 2 times";
+                                $level=$level."\nisMore than 2 times";
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -140,7 +140,7 @@ class DeviceRecordController extends Controller
 
 
                     }else{
-                        $level.="noFace";
+                        $level=$level."\nnoFace";
                         //no record
                         // dd('first');
                         $faceRecord->status='enter';
@@ -150,7 +150,7 @@ class DeviceRecordController extends Controller
 
                     // return back()->with('success', 'Sms sent successfully');
                 }else{
-                    $level.="noGuardian";
+                    $level=$level."\nnoGuardian";
 
                     $faceR=FaceRecord::where('upi_no','=',$upi_no)
                     ->whereDate('created_at', Carbon::today())
@@ -158,7 +158,7 @@ class DeviceRecordController extends Controller
                     ->first();
                     // dd($faceR);
                     if($faceR!=null){
-                        $level.="hasPrevFace";
+                        $level=$level."\nhasPrevFace";
                         //we have a record
                         //check if a record is already present within the past 30 minutes
                         $input=$faceR->time_taken;
@@ -166,7 +166,7 @@ class DeviceRecordController extends Controller
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
                         if($input2-$input<1){
-                            $level.="isSlessThan1Minute";
+                            $level=$level."\nisSlessThan1Minute";
 
                             // dd('<10');
                             //recent record taken
@@ -174,18 +174,18 @@ class DeviceRecordController extends Controller
                             // $faceRecord->save();
                             // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                         }else{
-                            $level.="isgreaterThan1Minute";
+                            $level=$level."\nisgreaterThan1Minute";
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                             ->whereDate('created_at', Carbon::today())
                             ->get()) ==1) {
-                                $level.="isExit";
+                                $level=$level."\nisExit";
                                 // dd('second');
                                 $faceRecord->status='exit';
                                 $faceRecord->save();
                             }else{
-                                $level.="isMore than 2 times";
+                                $level=$level."\nisMore than 2 times";
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -195,7 +195,7 @@ class DeviceRecordController extends Controller
 
 
                     }else{
-                        $level.="noFace";
+                        $level=$level."\nnoFace";
                         //no record
                         // dd('first');
                         $faceRecord->status='enter';
@@ -204,6 +204,7 @@ class DeviceRecordController extends Controller
 
                 }
             }else{
+                $level=$level."\nisStaff";
                 $staff=Staff::where('staff_id','=',$upi_no)->get()->first();
                 if ($staff!=null) {
                     $faceRecord=new StaffFaceRecord();
@@ -261,6 +262,9 @@ class DeviceRecordController extends Controller
                     }
                 }
             }
+        }else{
+
+            $level=$level."\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
         $record->data = 'recordUpload|'.implode("|",$request->all());
