@@ -56,6 +56,7 @@ class DeviceRecordController extends Controller
     }
     public function recordUpload(Request $request)
     {
+        $level="";
         $data = json_decode($request->data, TRUE)[0];
         // dd($data['eno']);
         $upi_no=$data['eno'];
@@ -82,6 +83,8 @@ class DeviceRecordController extends Controller
             $student=Student::where('upi_no','=',$upi_no)->get()->first();
             // dd($student->id);
             if($student!=null){
+
+                $level.="isStudent";
                 $faceRecord=new FaceRecord();
                 $faceRecord->upi_no=$upi_no;
                 $faceRecord->time_taken=$time_taken;
@@ -92,12 +95,14 @@ class DeviceRecordController extends Controller
 
                 $guardian=Guardian::where('student_id','=',$student->id)->where('should_notify','=','true')->first();
                 if($guardian!=null){
+                    $level.="hasGuardian";
                     $faceR=FaceRecord::where('upi_no','=',$upi_no)
                     ->whereDate('created_at', Carbon::today())
                     ->orderby('id','DESC')
                     ->first();
                     // dd($faceR);
                     if($faceR!=null){
+                        $level.="hasPrevFace";
                         //we have a record
                         //check if a record is already present within the past 30 minutes
                         $input=$faceR->time_taken;
@@ -105,6 +110,7 @@ class DeviceRecordController extends Controller
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
                         if($input2-$input<1){
+                            $level.="isSlessThan1Minute";
 
                             // dd('<10');
                             //recent record taken
@@ -112,16 +118,19 @@ class DeviceRecordController extends Controller
                             // $faceRecord->save();
                             // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                         }else{
+                            $level.="isgreaterThan1Minute";
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                             ->whereDate('created_at', Carbon::today())
                             ->get()) ==1) {
+                                $level.="isExit";
                                 // dd('second');
                                 $faceRecord->status='exit';
                                 $faceRecord->save();
                                 $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                             }else{
+                                $level.="isMore than 2 times";
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -131,6 +140,7 @@ class DeviceRecordController extends Controller
 
 
                     }else{
+                        $level.="noFace";
                         //no record
                         // dd('first');
                         $faceRecord->status='enter';
@@ -139,6 +149,59 @@ class DeviceRecordController extends Controller
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
+                }else{
+                    $level.="noGuardian";
+
+                    $faceR=FaceRecord::where('upi_no','=',$upi_no)
+                    ->whereDate('created_at', Carbon::today())
+                    ->orderby('id','DESC')
+                    ->first();
+                    // dd($faceR);
+                    if($faceR!=null){
+                        $level.="hasPrevFace";
+                        //we have a record
+                        //check if a record is already present within the past 30 minutes
+                        $input=$faceR->time_taken;
+                        $input2=$time_taken;
+                        $input = floor($input /1000 / 60);
+                        $input2 = floor($input2 /1000 / 60);
+                        if($input2-$input<1){
+                            $level.="isSlessThan1Minute";
+
+                            // dd('<10');
+                            //recent record taken
+                            //Ignore
+                            // $faceRecord->save();
+                            // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
+                        }else{
+                            $level.="isgreaterThan1Minute";
+                            //check if its the second record
+
+                            if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
+                            ->whereDate('created_at', Carbon::today())
+                            ->get()) ==1) {
+                                $level.="isExit";
+                                // dd('second');
+                                $faceRecord->status='exit';
+                                $faceRecord->save();
+                            }else{
+                                $level.="isMore than 2 times";
+                                // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
+                                // ->whereDate('created_at', Carbon::today())
+                                // ->get()));
+                                $faceRecord->save();
+                            }
+                        }
+
+
+                    }else{
+                        $level.="noFace";
+                        //no record
+                        // dd('first');
+                        $faceRecord->status='enter';
+                        $faceRecord->save();
+                    }
+
                 }
             }else{
                 $staff=Staff::where('staff_id','=',$upi_no)->get()->first();
@@ -214,11 +277,12 @@ class DeviceRecordController extends Controller
             'code'=>200,
             'success'=>true,
             'messsage'=>'successful',
-            'data'=>$myData
+            'data'=>$myData,
+            'stage'=>$level
         ]);
         return response($myResponse)
         ->header('Content-Type', 'application/json');
-        
+
     }
     public function dataPullT(Request $request)
     {
