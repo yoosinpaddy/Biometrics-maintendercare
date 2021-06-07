@@ -210,12 +210,15 @@ class DeviceRecordController extends Controller
                         //2: Do not display text, only voice
             'openDoor'=>1,//Whether
         ];
-        return json_encode([
+        $myResponse=json_encode([
             'code'=>200,
             'success'=>true,
             'messsage'=>'successful',
             'data'=>$myData
         ]);
+        return response($myResponse)
+        ->header('Content-Type', 'application/json');
+        
     }
     public function dataPullT(Request $request)
     {
