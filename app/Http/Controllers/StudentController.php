@@ -1040,23 +1040,68 @@ class StudentController extends Controller
     public function sendSms($guardian, $message)
     {
         // dd($guardian->phone);
-        $response = Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms', [
+
+        $response = Http::asForm()->withHeaders([
             'apikey' => $_ENV['SMS_API_KEY'],
-            'partnerID' => $_ENV['SMS_PATNER_ID'],
-            'shortcode' => $_ENV['SMS_SHORT_CODE'],
+        ])->post('https://api.africastalking.com/version1/messaging', [
+            'username' => $_ENV['SMS_USERNAME'],
+            'from' => $_ENV['SMS_FROM'],
             'message' => $message,
-            'mobile' => $guardian->phone,
+            'to' => $guardian->phone,
         ]);
         if ($response->successful()) {
             // dd($response->json()['responses'][0]['response-description']);
-            return back()->with('success', $response->json()['responses'][0]['response-description']);
+            return back()->with('success', 'Message sent successfully');
         }
 
         // Determine if the status code is >= 400...
         if ($response->failed()) {
             // dd($response->json()['errors']['message'][0]);
             return back()->withErrors([
-                'message' => $response->json()['errors']['message'][0],
+                'message' => $response->body(),
+            ]);
+        }
+
+        // Determine if the response has a 400 level status code...
+        if ($response->clientError()) {
+
+            return back()->withErrors([
+                'message' => 'Something went wrong, could not send sms',
+            ]);
+        }
+
+        // Determine if the response has a 500 level status code...
+        if ($response->serverError()) {
+
+            return back()->withErrors([
+                'message' => 'Something went wrong, could not send sms',
+            ]);
+        }
+    }
+
+    public function trySms()
+    {
+        // dd($guardian->phone);
+        $phone="0726569597";
+        $message="ONLINE TEST";
+        $response = Http::asForm()->withHeaders([
+            'apikey' => $_ENV['SMS_API_KEY'],
+        ])->post('https://api.africastalking.com/version1/messaging', [
+            'username' => $_ENV['SMS_USERNAME'],
+            'from' => $_ENV['SMS_FROM'],
+            'message' => $message,
+            'to' => $phone,
+        ]);
+        if ($response->successful()) {
+            // dd($response->json()['responses'][0]['response-description']);
+            return back()->with('success', 'Message sent successfully');
+        }
+
+        // Determine if the status code is >= 400...
+        if ($response->failed()) {
+            // dd($response->json()['errors']['message'][0]);
+            return back()->withErrors([
+                'message' => $response->body(),
             ]);
         }
 

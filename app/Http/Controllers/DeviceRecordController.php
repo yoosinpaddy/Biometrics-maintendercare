@@ -104,7 +104,7 @@ class DeviceRecordController extends Controller
                         $input2=$time_taken;
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<10){
+                        if($input2-$input<1){
 
                             // dd('<10');
                             //recent record taken
@@ -427,6 +427,44 @@ class DeviceRecordController extends Controller
         }else{
             $templete1=Smstemplete::where('id','=',2)->get()->pluck('content');
             $message1="Dear $guardian->fname, your child ".$face_record->student->first_name." ".$face_record->student->surname." UPI:".$face_record->student->upi_no." has left school for home at $new_time with a temperature of $temp ° ". $templete1[0];
+        }
+
+
+        $response = Http::asForm()->withHeaders([
+            'apikey' => $_ENV['SMS_API_KEY'],
+        ])->post('https://api.africastalking.com/version1/messaging', [
+            'username' => $_ENV['SMS_USERNAME'],
+            'from' => $_ENV['SMS_FROM'],
+            'message' => $message1,
+            'to' => $guardian->phone,
+        ]);
+        if ($response->successful()) {
+            // dd($response->json()['responses'][0]['response-description']);
+            return back()->with('success', 'Message sent successfully');
+        }
+
+        // Determine if the status code is >= 400...
+        if ($response->failed()) {
+            // dd($response->json()['errors']['message'][0]);
+            return back()->withErrors([
+                'message' => $response->body(),
+            ]);
+        }
+
+        // Determine if the response has a 400 level status code...
+        if ($response->clientError()) {
+
+            return back()->withErrors([
+                'message' => 'Something went wrong, could not send sms',
+            ]);
+        }
+
+        // Determine if the response has a 500 level status code...
+        if ($response->serverError()) {
+
+            return back()->withErrors([
+                'message' => 'Something went wrong, could not send sms',
+            ]);
         }
 
         // $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
