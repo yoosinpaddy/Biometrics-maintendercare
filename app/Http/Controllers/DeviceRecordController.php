@@ -152,7 +152,8 @@ class DeviceRecordController extends Controller
                                 // dd('second');
                                 $faceRecord->status='exit';
                                 $faceRecord->save();
-                                $this->sendSms($guardian,$faceRecord,$time_taken,'second');
+                                //disable sms
+                                // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                             }else{
                                 $level=$level."\nisMore than 2 times";
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
@@ -169,7 +170,8 @@ class DeviceRecordController extends Controller
                         // dd('first');
                         $faceRecord->status='enter';
                         $faceRecord->save();
-                        $this->sendSms($guardian,$faceRecord,$time_taken,'first');
+                        //disable sms
+                        // $this->sendSms($guardian,$faceRecord,$time_taken,'first');
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
