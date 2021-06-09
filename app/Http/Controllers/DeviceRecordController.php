@@ -300,7 +300,7 @@ class DeviceRecordController extends Controller
         }
         $record = new DeviceRecord();
         // $record->data = 'recordUpload|'.implode("|",$request->all());
-        $record->data = 'recordUpload|'.$level.implode("|",$request->all());
+        $record->data = 'recordUpload|'.$level;
         $record->save();
     }
     public function dataPullT(Request $request)
