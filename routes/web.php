@@ -80,18 +80,18 @@ Route::get('/forgotPassword', [StudentController::class, 'forgotPassword'])->nam
 
 
 
-Route::get('/device/{school_id}/posts', [PostController::class, 'index']);
-Route::get('/device/{school_id}/deviceHeartBeat', [DeviceRecordController::class, 'storeg']);
+// Route::get('/device/{school_id}/posts', [PostController::class, 'index']);
+// Route::get('/device/{school_id}/deviceHeartBeat', [DeviceRecordController::class, 'storeg']);
 Route::post('/device/{school_id}/deviceHeartBeat', [DeviceRecordController::class, 'store']);
 
-Route::get('/device/{school_id}/recordUpload', [DeviceRecordController::class, 'recordUploadg']);
+// Route::get('/device/{school_id}/recordUpload', [DeviceRecordController::class, 'recordUploadg']);
 Route::post('/device/{school_id}/recordUpload', [DeviceRecordController::class, 'recordUpload']);
 
-Route::get('/device/{school_id}/dataPull', [DeviceRecordController::class, 'dataPullg']);
+// Route::get('/device/{school_id}/dataPull', [DeviceRecordController::class, 'dataPullg']);
 Route::post('/device/{school_id}/dataPull', [DeviceRecordController::class, 'dataPull']);
 Route::post('/device/{school_id}/dataPullT', [DeviceRecordController::class, 'dataPullT']);
 
-Route::get('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBackg']);
+// Route::get('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBackg']);
 Route::post('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBack']);
 
-Route::get('store', [PostController::class, 'store']);
+// Route::get('store', [PostController::class, 'store']);

@@ -64,6 +64,9 @@ class DeviceRecordController extends Controller
             $coointer++;
             $this->loopUpload($key1,$request->all());
         }
+        $record = new DeviceRecord();
+        $record->data = 'recordUpload|ALl data:'.$coointer;
+        $record->save();
         $myData=[
             'openDoor'=>1,//Whether open relay, 0: no, 1: open
             'tipSpeech'=>"Thanks for verifying",//Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
@@ -80,9 +83,6 @@ class DeviceRecordController extends Controller
             'stage'=>$level
         ]);
 
-        $record = new DeviceRecord();
-        $record->data = 'recordUpload|ALl data:'.$coointer;
-        $record->save();
         return response($myResponse)
         ->header('Content-Type', 'application/json');
 
@@ -299,7 +299,7 @@ class DeviceRecordController extends Controller
             $level=$level."\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
-        $record->data = 'recordUpload|'.implode("|",$request->all());
+        $record->data = 'recordUpload|'.implode("|",$request->all()).'|'.$level;
         $record->save();
     }
     public function dataPullT(Request $request)
