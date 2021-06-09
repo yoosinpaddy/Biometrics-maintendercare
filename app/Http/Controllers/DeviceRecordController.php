@@ -59,7 +59,9 @@ class DeviceRecordController extends Controller
         $level="Start---\n";
         $data = json_decode($request->data, TRUE);
         // dd($data['eno']);
+        $coointer=0;
         foreach ($data as $key1) {
+            $coointer++;
             $this->loopUpload($key1,$request->all());
         }
         $myData=[
@@ -77,6 +79,10 @@ class DeviceRecordController extends Controller
             'data'=>$myData,
             'stage'=>$level
         ]);
+
+        $record = new DeviceRecord();
+        $record->data = 'recordUpload|ALl data:'.$coointer;
+        $record->save();
         return response($myResponse)
         ->header('Content-Type', 'application/json');
 
@@ -293,7 +299,7 @@ class DeviceRecordController extends Controller
             $level=$level."\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
-        $record->data = 'recordUpload|'.implode("|",$request);
+        $record->data = 'recordUpload|'.implode("|",$request->all());
         $record->save();
     }
     public function dataPullT(Request $request)
