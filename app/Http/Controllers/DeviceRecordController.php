@@ -299,7 +299,8 @@ class DeviceRecordController extends Controller
             $level=$level."\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
-        $record->data = 'recordUpload|'.implode("|",$request->all()).'|'.$level;
+        // $record->data = 'recordUpload|'.implode("|",$request->all());
+        $record->data = 'recordUpload|'.$level.implode("|",$request->all());
         $record->save();
     }
     public function dataPullT(Request $request)
