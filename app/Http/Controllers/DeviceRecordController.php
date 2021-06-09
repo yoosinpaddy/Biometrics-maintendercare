@@ -355,8 +355,8 @@ global $level;
             $level=$level."\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
-        $record->data = 'recordUpload|'.$level.implode("|",$request);
-        // $record->data = 'recordUpload|'.$level;
+        // $record->data = 'recordUpload|'.$level.implode("|",$request);
+        $record->data = 'recordUpload|'.$level;
         $record->save();
     }
     public function dataPullT(Request $request)
