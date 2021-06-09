@@ -140,7 +140,7 @@ global $level;
                         $input2=$time_taken;
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<1){
+                        if($input2-$input<210){
                             $level=$level."\nisSlessThan1Minute";
 
                             // dd('<10');
@@ -154,7 +154,7 @@ global $level;
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                             ->whereDate('created_at', Carbon::today())
-                            ->get()) ==210) {
+                            ->get()) ==1) {
                                 $level=$level."\nisExit";
                                 // dd('second');
                                 $faceRecord->status='exit';
@@ -200,7 +200,7 @@ global $level;
                         $input2=$time_taken;
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<1){
+                        if($input2-$input<210){
                             $level=$level."\nisSlessThan1Minute";
 
                             // dd('<10');
@@ -266,7 +266,7 @@ global $level;
                         $input2=$time_taken;
                         $input = floor($input /1000 / 60);
                         $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<10){
+                        if($input2-$input<210){
 
                             // dd('<10');
                             //recent record taken
