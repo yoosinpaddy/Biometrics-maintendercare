@@ -54,9 +54,9 @@ class DeviceRecordController extends Controller
             'data'=>(time()*1000)
         ]);
     }
+    public $level="Start---\n";
     public function recordUpload(Request $request)
     {
-        $level="Start---\n";
         $data = json_decode($request->data, TRUE);
         // dd($data['eno']);
         $coointer=0;
@@ -80,7 +80,7 @@ class DeviceRecordController extends Controller
             'success'=>true,
             'messsage'=>'successful',
             'data'=>$myData,
-            'stage'=>$level
+            'stage'=>$GLOBALS['level']
         ]);
 
         return response($myResponse)
@@ -88,6 +88,7 @@ class DeviceRecordController extends Controller
 
     }
     public function loopUpload($data,$request){
+global $level;
         $level="Start---\n";
         $upi_no=$data['eno'];
         $time_taken=$data['scandatetime'];
