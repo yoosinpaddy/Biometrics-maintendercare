@@ -147,7 +147,7 @@ class DeviceRecordController extends Controller
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                             ->whereDate('created_at', Carbon::today())
-                            ->get()) ==1) {
+                            ->get()) ==210) {
                                 $level=$level."\nisExit";
                                 // dd('second');
                                 $faceRecord->status='exit';
