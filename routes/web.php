@@ -94,4 +94,4 @@ Route::post('/device/{school_id}/dataPullT', [DeviceRecordController::class, 'da
 // Route::get('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBackg']);
 Route::post('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBack']);
 
-// Route::get('store', [PostController::class, 'store']);
+Route::get('updates', [DeviceRecordController::class, 'updates']);
