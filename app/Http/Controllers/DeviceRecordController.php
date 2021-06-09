@@ -57,7 +57,7 @@ class DeviceRecordController extends Controller
     public function updates(Request $request){
         $records=FaceRecord::whereDate('created_at', Carbon::today())->select('upi_no')->distinct()
         ->get();
-        dd($records);
+        dd(sizeof($records));
     }
     public $level="Start---\n";
     public function recordUpload(Request $request)
