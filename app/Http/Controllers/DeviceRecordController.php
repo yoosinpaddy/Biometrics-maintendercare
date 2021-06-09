@@ -162,7 +162,9 @@ global $level;
                                 //disable sms
                                 // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                             }else{
-                                $level=$level."\nisMore than 2 times";
+                                $level=$level."\nisMore than 2 times".sizeof(FaceRecord::where('upi_no', '=', $upi_no)
+                                ->whereDate('created_at', Carbon::today())
+                                ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
