@@ -57,22 +57,22 @@ class DeviceRecordController extends Controller
 
     public function updates(Request $request)
     {
-        $records = FaceRecord::whereDate('created_at', Carbon::today())->select('upi_no')->distinct()
+        $records = FaceRecord::whereDate('created_at', Carbon::yesterday())->select('upi_no')->distinct()
             ->get();
         foreach ($records as $key) {
-            $enter = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status', '=', 'enter')->where('upi_no', '=', $key->upi_no)
+            $enter = sizeof(FaceRecord::whereDate('created_at', Carbon::yesterday())->where('status', '=', 'enter')->where('upi_no', '=', $key->upi_no)
                 ->get());
-            $exit = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status', '=', 'exit')->where('upi_no', '=', $key->upi_no)
+            $exit = sizeof(FaceRecord::whereDate('created_at', Carbon::yesterday())->where('status', '=', 'exit')->where('upi_no', '=', $key->upi_no)
                 ->get());
-            $mnull = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+            $mnull = sizeof(FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                 ->get());
             if ($enter == 0 && $exit == 0 && $mnull > 1) {
-                $r = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                $r = FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
                 if ($r) {
                     $r->status = 'enter';
                     $r->save();
-                    $x = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                    $x = FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                         ->get()->first();
                     if ($x) {
                         $r->status = 'exit';
@@ -80,7 +80,7 @@ class DeviceRecordController extends Controller
                     }
                 }
             } else if ($enter == 0 && $exit == 0 && $mnull == 1) {
-                $r = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                $r = FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
                 if ($r) {
                     $r->status = 'enter';
@@ -88,7 +88,7 @@ class DeviceRecordController extends Controller
                 }
 
             } else if ($enter == 1 && $exit == 0 && $mnull == 1) {
-                $r = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                $r = FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
                 if ($r) {
                     $r->status = 'exit';
@@ -96,17 +96,17 @@ class DeviceRecordController extends Controller
                 }
 
             } else if ($enter == 0 && $exit == 1) {
-                $r = FaceRecord::whereDate('created_at', Carbon::today())->where('upi_no', '=', $key->upi_no)
+                $r = FaceRecord::whereDate('created_at', Carbon::yesterday())->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
                 if ($r) {
                     $r->status = 'enter';
                     $r->save();
                 }
-                $t = FaceRecord::whereDate('created_at', Carbon::today())->where('status','=','exit')->where('upi_no', '=', $key->upi_no)
+                $t = FaceRecord::whereDate('created_at', Carbon::yesterday())->where('status','=','exit')->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
 
                 if (!$t) {
-                    $y = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                    $y = FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                         ->get()->first();
                     if ($y) {
                         $y->status = 'exit';
