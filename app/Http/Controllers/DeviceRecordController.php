@@ -77,10 +77,10 @@ class DeviceRecordController extends Controller
                 ->get());
 
             if ($key->upi_no == "03891") {
-                dd($enter, $exit, $mnull, FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
-                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-                    ->where('upi_no', '=', $key->upi_no)
-                    ->get());
+//                dd($enter, $exit, $mnull, FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
+//                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+//                    ->where('upi_no', '=', $key->upi_no)
+//                    ->get());
 
             }
             if ($enter == 0 && $exit == 0 && $mnull > 1) {
