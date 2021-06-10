@@ -39,183 +39,200 @@ class DeviceRecordController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $record = new DeviceRecord();
-        $record->data = 'store|'.implode("|",$request->all());
+        $record->data = 'store|' . implode("|", $request->all());
         $record->save();
         return json_encode([
-            'code'=>200,
-            'success'=>true,
-            'messsage'=>'successful',
-            'data'=>(time()*1000)
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => (time() * 1000)
         ]);
     }
-    public function updates(Request $request){
-        $records=FaceRecord::whereDate('created_at', Carbon::today())->select('upi_no')->distinct()
-        ->get();
+
+    public function updates(Request $request)
+    {
+        $records = FaceRecord::whereDate('created_at', Carbon::today())->select('upi_no')->distinct()
+            ->get();
         foreach ($records as $key) {
-            $enter=sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status','=','enter')->where('upi_no','=',$key->upi_no)
-            ->get());
-            $exit=sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status','=','exit')->where('upi_no','=',$key->upi_no)
-            ->get());
-            $mnull=sizeof(FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no','=',$key->upi_no)
-            ->get());
-            if($enter==0&&$exit==0&&$mnull>1){
-                $r=FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no','=',$key->upi_no)
-                ->get()->first();
-                if($r){
-                    $r->status='enter';
-                    $r->save();
-                    $x=FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no','=',$key->upi_no)
+            $enter = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status', '=', 'enter')->where('upi_no', '=', $key->upi_no)
+                ->get());
+            $exit = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status', '=', 'exit')->where('upi_no', '=', $key->upi_no)
+                ->get());
+            $mnull = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                ->get());
+            if ($enter == 0 && $exit == 0 && $mnull > 1) {
+                $r = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
-                    if($x){
-                        $r->status='exit';
+                if ($r) {
+                    $r->status = 'enter';
+                    $r->save();
+                    $x = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                        ->get()->first();
+                    if ($x) {
+                        $r->status = 'exit';
                         $r->save();
                     }
                 }
-            }else if($enter==0&&$exit==0&&$mnull==1){
-                $r=FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no','=',$key->upi_no)
-                ->get()->first();
-                if($r){
-                    $r->status='enter';
+            } else if ($enter == 0 && $exit == 0 && $mnull == 1) {
+                $r = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                    ->get()->first();
+                if ($r) {
+                    $r->status = 'enter';
                     $r->save();
                 }
 
-            }else if($enter==1&&$exit==0&&$mnull==1){
-                $r=FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no','=',$key->upi_no)
-                ->get()->first();
-                if($r){
-                    $r->status='exit';
+            } else if ($enter == 1 && $exit == 0 && $mnull == 1) {
+                $r = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                    ->get()->first();
+                if ($r) {
+                    $r->status = 'exit';
                     $r->save();
                 }
 
-            }else if($enter==0&&$exit==1&&$mnull==1){
-                $r=FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no','=',$key->upi_no)
-                ->get()->first();
-                if($r){
-                    $r->status='enter';
+            } else if ($enter == 0 && $exit == 1 && $mnull == 1) {
+                $r = FaceRecord::whereDate('created_at', Carbon::today())->where('upi_no', '=', $key->upi_no)
+                    ->get()->first();
+                if ($r) {
+                    $r->status = 'enter';
                     $r->save();
                 }
+                $t = FaceRecord::whereDate('created_at', Carbon::today())->where('status','=','exit')->where('upi_no', '=', $key->upi_no)
+                    ->get()->first();
 
+                if (!$t) {
+                    $y = FaceRecord::whereDate('created_at', Carbon::today())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                        ->get()->first();
+                    if ($y) {
+                        $y->status = 'exit';
+                        $y->save();
+
+                    }
+                }
             }
         }
         dd('done');
     }
-    public $level="Start---\n";
+
+    public $level = "Start---\n";
+
     public function recordUpload(Request $request)
     {
         $data = json_decode($request->data, TRUE);
         // dd($data['eno']);
-        $coointer=0;
+        $coointer = 0;
         foreach ($data as $key1) {
             $coointer++;
-            $this->loopUpload($key1,$request->all());
+            $this->loopUpload($key1, $request->all());
         }
         $record = new DeviceRecord();
-        $record->data = 'recordUpload|ALl data:'.$coointer;
+        $record->data = 'recordUpload|ALl data:' . $coointer;
         $record->save();
-        $myData=[
-            'openDoor'=>1,//Whether open relay, 0: no, 1: open
-            'tipSpeech'=>"Thanks for verifying",//Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
-            'state'=>2,//0: Display text and broadcast voice at the same time
-                        //1: Only text is displayed, no voice is broadcasted.
-                        //2: Do not display text, only voice
-            'openDoor'=>1,//Whether
+        $myData = [
+            'openDoor' => 1,//Whether open relay, 0: no, 1: open
+            'tipSpeech' => "Thanks for verifying",//Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
+            'state' => 2,//0: Display text and broadcast voice at the same time
+            //1: Only text is displayed, no voice is broadcasted.
+            //2: Do not display text, only voice
+            'openDoor' => 1,//Whether
         ];
-        $myResponse=json_encode([
-            'code'=>200,
-            'success'=>true,
-            'messsage'=>'successful',
-            'data'=>$myData,
-            'stage'=>$GLOBALS['level']
+        $myResponse = json_encode([
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => $myData,
+            'stage' => $GLOBALS['level']
         ]);
 
         return response($myResponse)
-        ->header('Content-Type', 'application/json');
+            ->header('Content-Type', 'application/json');
 
     }
-    public function loopUpload($data,$request){
-global $level;
-        $level="Start---\n";
-        $upi_no=$data['eno'];
-        $time_taken=$data['scandatetime'];
-        $device_serial=$data['macno'];
-        $temperature=$data['temperature'];
-        $event=$data['operatorno'];//operatorno Punch Type :
-                                    // face_0: successful face recognition
-                                    // face_2: stranger brushes face
-                                    // card_0: swipe card successfully
-                                    // card_2: Invalid card
-                                    // idcard_0: Witness matching successful
-                                    // idcard_2: witness match failure
-                                    // faceAndcard_0: successful card+face dual authentication
-                                    // faceAndcard_2: card+face dual authentication failure
-                                    // open_0: button to open the door.
-                                    // qrcode_0: QR Code Success
-                                    // qrcode_2: unregistered QR code (no counterpart for QR code)
-                                    // password_0: password to open the door
-                                    // -2020-02-25: Adding a record of failed witness comparison
-                                    // --2020-09-14 (version 2.2.2): add open door password
 
-        if($event=='face_0'||$event=='card_0'||$event=='faceAndcard_0'){
-            $student=Student::where('upi_no','=',$upi_no)->get()->first();
+    public function loopUpload($data, $request)
+    {
+        global $level;
+        $level = "Start---\n";
+        $upi_no = $data['eno'];
+        $time_taken = $data['scandatetime'];
+        $device_serial = $data['macno'];
+        $temperature = $data['temperature'];
+        $event = $data['operatorno'];//operatorno Punch Type :
+        // face_0: successful face recognition
+        // face_2: stranger brushes face
+        // card_0: swipe card successfully
+        // card_2: Invalid card
+        // idcard_0: Witness matching successful
+        // idcard_2: witness match failure
+        // faceAndcard_0: successful card+face dual authentication
+        // faceAndcard_2: card+face dual authentication failure
+        // open_0: button to open the door.
+        // qrcode_0: QR Code Success
+        // qrcode_2: unregistered QR code (no counterpart for QR code)
+        // password_0: password to open the door
+        // -2020-02-25: Adding a record of failed witness comparison
+        // --2020-09-14 (version 2.2.2): add open door password
+
+        if ($event == 'face_0' || $event == 'card_0' || $event == 'faceAndcard_0') {
+            $student = Student::where('upi_no', '=', $upi_no)->get()->first();
             // dd($student->id);
-            if($student!=null){
+            if ($student != null) {
 
-                $level=$level."\nisStudent";
-                $faceRecord=new FaceRecord();
-                $faceRecord->upi_no=$upi_no;
-                $faceRecord->time_taken=$time_taken;
-                $faceRecord->device_serial=$device_serial;
-                $faceRecord->event=$event;
-                $faceRecord->temperature=$temperature;
+                $level = $level . "\nisStudent";
+                $faceRecord = new FaceRecord();
+                $faceRecord->upi_no = $upi_no;
+                $faceRecord->time_taken = $time_taken;
+                $faceRecord->device_serial = $device_serial;
+                $faceRecord->event = $event;
+                $faceRecord->temperature = $temperature;
 
 
-                $guardian=Guardian::where('student_id','=',$student->id)->where('should_notify','=','true')->first();
-                if($guardian!=null){
-                    $level=$level."\nhasGuardian";
-                    $faceR=FaceRecord::where('upi_no','=',$upi_no)
-                    ->whereDate('created_at', Carbon::today())
-                    ->orderby('id','DESC')
-                    ->first();
+                $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->first();
+                if ($guardian != null) {
+                    $level = $level . "\nhasGuardian";
+                    $faceR = FaceRecord::where('upi_no', '=', $upi_no)
+                        ->whereDate('created_at', Carbon::today())
+                        ->orderby('id', 'DESC')
+                        ->first();
                     // dd($faceR);
-                    if($faceR!=null){
-                        $level=$level."\nhasPrevFace";
+                    if ($faceR != null) {
+                        $level = $level . "\nhasPrevFace";
                         //we have a record
                         //check if a record is already present within the past 30 minutes
-                        $input=$faceR->time_taken;
-                        $input2=$time_taken;
-                        $input = floor($input /1000 / 60);
-                        $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<210){
-                            $level=$level."\nisSlessThan1Minute";
+                        $input = $faceR->time_taken;
+                        $input2 = $time_taken;
+                        $input = floor($input / 1000 / 60);
+                        $input2 = floor($input2 / 1000 / 60);
+                        if ($input2 - $input < 210) {
+                            $level = $level . "\nisSlessThan1Minute";
 
                             // dd('<10');
                             //recent record taken
                             //Ignore
                             // $faceRecord->save();
                             // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
-                        }else{
-                            $level=$level."\nisgreaterThan1Minute";
+                        } else {
+                            $level = $level . "\nisgreaterThan1Minute";
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                            ->whereDate('created_at', Carbon::today())
-                            ->get()) ==1) {
-                                $level=$level."\nisExit";
+                                    ->whereDate('created_at', Carbon::today())
+                                    ->get()) == 1) {
+                                $level = $level . "\nisExit";
                                 // dd('second');
-                                $faceRecord->status='exit';
+                                $faceRecord->status = 'exit';
                                 $faceRecord->save();
                                 //disable sms
                                 // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
-                            }else{
-                                $level=$level."\nisMore than 2 times".sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                ->whereDate('created_at', Carbon::today())
-                                ->get());
+                            } else {
+                                $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
+                                        ->whereDate('created_at', Carbon::today())
+                                        ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -224,56 +241,56 @@ global $level;
                         }
 
 
-                    }else{
-                        $level=$level."\nnoFace";
+                    } else {
+                        $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status='enter';
+                        $faceRecord->status = 'enter';
                         $faceRecord->save();
                         //disable sms
                         // $this->sendSms($guardian,$faceRecord,$time_taken,'first');
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
-                }else{
-                    $level=$level."\nnoGuardian";
+                } else {
+                    $level = $level . "\nnoGuardian";
 
-                    $faceR=FaceRecord::where('upi_no','=',$upi_no)
-                    ->whereDate('created_at', Carbon::today())
-                    ->orderby('id','DESC')
-                    ->first();
+                    $faceR = FaceRecord::where('upi_no', '=', $upi_no)
+                        ->whereDate('created_at', Carbon::today())
+                        ->orderby('id', 'DESC')
+                        ->first();
                     // dd($faceR);
-                    if($faceR!=null){
-                        $level=$level."\nhasPrevFace";
+                    if ($faceR != null) {
+                        $level = $level . "\nhasPrevFace";
                         //we have a record
                         //check if a record is already present within the past 30 minutes
-                        $input=$faceR->time_taken;
-                        $input2=$time_taken;
-                        $input = floor($input /1000 / 60);
-                        $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<210){
-                            $level=$level."\nisSlessThan1Minute";
+                        $input = $faceR->time_taken;
+                        $input2 = $time_taken;
+                        $input = floor($input / 1000 / 60);
+                        $input2 = floor($input2 / 1000 / 60);
+                        if ($input2 - $input < 210) {
+                            $level = $level . "\nisSlessThan1Minute";
 
                             // dd('<10');
                             //recent record taken
                             //Ignore
                             // $faceRecord->save();
                             // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
-                        }else{
-                            $level=$level."\nisgreaterThan1Minute";
+                        } else {
+                            $level = $level . "\nisgreaterThan1Minute";
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                            ->whereDate('created_at', Carbon::today())
-                            ->get()) ==1) {
-                                $level=$level."\nisExit";
+                                    ->whereDate('created_at', Carbon::today())
+                                    ->get()) == 1) {
+                                $level = $level . "\nisExit";
                                 // dd('second');
-                                $faceRecord->status='exit';
+                                $faceRecord->status = 'exit';
                                 $faceRecord->save();
-                            }else{
-                                $level=$level."\nisMore than 2 times".sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                ->whereDate('created_at', Carbon::today())
-                                ->get());
+                            } else {
+                                $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
+                                        ->whereDate('created_at', Carbon::today())
+                                        ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -282,58 +299,57 @@ global $level;
                         }
 
 
-                    }else{
-                        $level=$level."\nnoFace";
+                    } else {
+                        $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status='enter';
+                        $faceRecord->status = 'enter';
                         $faceRecord->save();
                     }
 
                 }
-            }else{
-                $level=$level."\nisStaff";
-                $staff=Staff::where('staff_id','=',$upi_no)->get()->first();
-                if ($staff!=null) {
-                    $faceRecord=new StaffFaceRecord();
-                $faceRecord->reg_no=$upi_no;
-                $faceRecord->time_taken=$time_taken;
-                $faceRecord->device_serial=$device_serial;
-                $faceRecord->staff_type=$staff->type;
-                $faceRecord->event=$event;
-                $faceRecord->temperature=$temperature;
+            } else {
+                $level = $level . "\nisStaff";
+                $staff = Staff::where('staff_id', '=', $upi_no)->get()->first();
+                if ($staff != null) {
+                    $faceRecord = new StaffFaceRecord();
+                    $faceRecord->reg_no = $upi_no;
+                    $faceRecord->time_taken = $time_taken;
+                    $faceRecord->device_serial = $device_serial;
+                    $faceRecord->staff_type = $staff->type;
+                    $faceRecord->event = $event;
+                    $faceRecord->temperature = $temperature;
 
 
-
-                    $faceR=StaffFaceRecord::where('reg_no','=',$upi_no)
-                    ->whereDate('created_at', Carbon::today())
-                    ->orderby('id','DESC')
-                    ->first();
+                    $faceR = StaffFaceRecord::where('reg_no', '=', $upi_no)
+                        ->whereDate('created_at', Carbon::today())
+                        ->orderby('id', 'DESC')
+                        ->first();
                     // dd($faceR);
-                    if($faceR!=null){
+                    if ($faceR != null) {
                         //we have a record
                         //check if a record is already present within the past 30 minutes
-                        $input=$faceR->time_taken;
-                        $input2=$time_taken;
-                        $input = floor($input /1000 / 60);
-                        $input2 = floor($input2 /1000 / 60);
-                        if($input2-$input<210){
+                        $input = $faceR->time_taken;
+                        $input2 = $time_taken;
+                        $input = floor($input / 1000 / 60);
+                        $input2 = floor($input2 / 1000 / 60);
+                        if ($input2 - $input < 210) {
 
                             // dd('<10');
                             //recent record taken
                             //Ignore
                             // $faceRecord->save();
                             // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
-                        }else{
+                        } else {
                             //check if its the second record
 
                             if (sizeof(StaffFaceRecord::where('reg_no', '=', $upi_no)
-                            ->whereDate('created_at', Carbon::today())
-                            ->get()) ==1) {
+                                    ->whereDate('created_at', Carbon::today())
+                                    ->get()) == 1) {
                                 // dd('second');
-                                $faceRecord->status='exit';
+                                $faceRecord->status = 'exit';
                                 $faceRecord->save();
-                            }else{
+                            } else {
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -342,179 +358,182 @@ global $level;
                         }
 
 
-                    }else{
+                    } else {
                         //no record
                         // dd('first');
-                        $faceRecord->status='enter';
+                        $faceRecord->status = 'enter';
                         $faceRecord->save();
                     }
                 }
             }
-        }else{
+        } else {
 
-            $level=$level."\nfaceNotCapturedCorrectly";
+            $level = $level . "\nfaceNotCapturedCorrectly";
         }
         $record = new DeviceRecord();
         // $record->data = 'recordUpload|'.$level.implode("|",$request);
-        $record->data = 'recordUpload|'.$level;
+        $record->data = 'recordUpload|' . $level;
         $record->save();
     }
+
     public function dataPullT(Request $request)
     {
         $record = new DeviceRecord();
-        $record->data = 'dataPull |'.implode("|",$request->all());
+        $record->data = 'dataPull |' . implode("|", $request->all());
         $record->save();
-        $pageNumber=null;
-        if($request->has('pageNumber')){
-            $pageNumber=$request->pageNumber;
+        $pageNumber = null;
+        if ($request->has('pageNumber')) {
+            $pageNumber = $request->pageNumber;
         }
-        $students_count=Student::withTrashed()->where('class','!=','9')->get();
+        $students_count = Student::withTrashed()->where('class', '!=', '9')->get();
         // $students=Student::withTrashed()->where('class','!=','9')->paginate(100, ['*'], 'page', $pageNumber);
 
         $users = User::withTrashed()
-        ->leftJoin('students', function ($join) {
-            $join->on('users.id', '=', 'students.user_id')
-                 ->where('students.class', '!=','9');
-        })
-        // ->leftJoin('students', 'users.id', '=', 'students.user_id')
+            ->leftJoin('students', function ($join) {
+                $join->on('users.id', '=', 'students.user_id')
+                    ->where('students.class', '!=', '9');
+            })
+            // ->leftJoin('students', 'users.id', '=', 'students.user_id')
             ->leftJoin('staff', 'users.id', '=', 'staff.user_id')
-            ->select('users.*', 'students.upi_no', 'students.first_name','students.surname',  'students.class', 'staff.staff_id')
-            ->where('users.password','=',null)
+            ->select('users.*', 'students.upi_no', 'students.first_name', 'students.surname', 'students.class', 'staff.staff_id')
+            ->where('users.password', '=', null)
             ->get();
-            // ->paginate(100, ['*'], 'page', $pageNumber);
+        // ->paginate(100, ['*'], 'page', $pageNumber);
 
         // dd($users);
-        $formated_students=[];
+        $formated_students = [];
         foreach ($users as $student) {
-            if(isset($student->upi_no)){
+            if (isset($student->upi_no)) {
                 // if($student->upi_no=="04308"){
                 //     dd($student);
                 // }
-                if($student->class!=9){
+                if ($student->class != 9) {
                     array_push($formated_students, (object)[
-                        'eno'=>$student->upi_no,//work number
-                        'idcard'=>'stream',//ID number-use as stream
-                        'cardid'=>'class '.$student->class,//card number-use as class
-                        'uuid'=>$student->id,//uuid
-                        'name'=>$student->first_name." ".$student->surname.' (class '.$student->class.')',//names
-                        'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                        'eno' => $student->upi_no,//work number
+                        'idcard' => 'stream',//ID number-use as stream
+                        'cardid' => 'class ' . $student->class,//card number-use as class
+                        'uuid' => $student->id,//uuid
+                        'name' => $student->first_name . " " . $student->surname . ' (class ' . $student->class . ')',//names
+                        'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                     ]);
                 }
 
-            }else if(isset($student->staff_id)){
-            array_push($formated_students, (object)[
-                'eno'=>$student->staff_id,//work number
-                'idcard'=>'staff',//ID number-use as stream
-                'cardid'=>$student->id,//card number-use as class
-                'uuid'=>$student->id,//uuid
-                'name'=>$student->name,//names
-                'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
-            ]);}else{
+            } else if (isset($student->staff_id)) {
+                array_push($formated_students, (object)[
+                    'eno' => $student->staff_id,//work number
+                    'idcard' => 'staff',//ID number-use as stream
+                    'cardid' => $student->id,//card number-use as class
+                    'uuid' => $student->id,//uuid
+                    'name' => $student->name,//names
+                    'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                ]);
+            } else {
                 // array_push($formated_students, (object)[
                 //     'NA'=>$student->id
                 //      ]);
             }
         }
-        $data=[
-            'employeeList'=> $formated_students,
-            'count'=>sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
-            'sum'=>sizeof($formated_students),//Total number of records in the population list
+        $data = [
+            'employeeList' => $formated_students,
+            'count' => sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
+            'sum' => sizeof($formated_students),//Total number of records in the population list
         ];
-        $myResponse=json_encode([
-            'code'=>200,
-            'success'=>true,
-            'messsage'=>'successful',
-            'data'=>$data
+        $myResponse = json_encode([
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => $data
         ]);
         return response($myResponse)
-        ->header('Content-Type', 'application/json');
+            ->header('Content-Type', 'application/json');
     }
 
     public function dataPull(Request $request)
     {
         $record = new DeviceRecord();
-        $record->data = 'dataPull |'.implode("|",$request->all());
+        $record->data = 'dataPull |' . implode("|", $request->all());
         $record->save();
-        $pageNumber=null;
-        if($request->has('pageNumber')){
-            $pageNumber=$request->pageNumber;
+        $pageNumber = null;
+        if ($request->has('pageNumber')) {
+            $pageNumber = $request->pageNumber;
         }
-        $students_count=Student::withTrashed()->where('class','!=','9')->get();
+        $students_count = Student::withTrashed()->where('class', '!=', '9')->get();
         // $students=Student::withTrashed()->where('class','!=','9')->paginate(100, ['*'], 'page', $pageNumber);
 
         $users = User::withTrashed()
-        ->leftJoin('students', function ($join) {
-            $join->on('users.id', '=', 'students.user_id')
-                 ->where('students.class', '!=','9');
-        })
-        // ->leftJoin('students', 'users.id', '=', 'students.user_id')
+            ->leftJoin('students', function ($join) {
+                $join->on('users.id', '=', 'students.user_id')
+                    ->where('students.class', '!=', '9');
+            })
+            // ->leftJoin('students', 'users.id', '=', 'students.user_id')
             ->leftJoin('staff', 'users.id', '=', 'staff.user_id')
             ->select('users.*', 'students.upi_no', 'students.class', 'staff.staff_id')
-            ->where('users.password','=',null)
+            ->where('users.password', '=', null)
             ->get();
-            // ->paginate(100, ['*'], 'page', $pageNumber);
+        // ->paginate(100, ['*'], 'page', $pageNumber);
 
         // dd($users);
-        $formated_students=[];
+        $formated_students = [];
         foreach ($users as $student) {
-            if(isset($student->upi_no)){
-                if($student->class!=9){
+            if (isset($student->upi_no)) {
+                if ($student->class != 9) {
                     array_push($formated_students, (object)[
-                        'eno'=>$student->upi_no,//work number
-                        'idcard'=>'stream',//ID number-use as stream
-                        'cardid'=>'class '.$student->class,//card number-use as class
-                        'uuid'=>$student->id,//uuid
-                        'name'=>$student->name.' (class '.$student->class.')',//names
-                        'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                        'eno' => $student->upi_no,//work number
+                        'idcard' => 'stream',//ID number-use as stream
+                        'cardid' => 'class ' . $student->class,//card number-use as class
+                        'uuid' => $student->id,//uuid
+                        'name' => $student->name . ' (class ' . $student->class . ')',//names
+                        'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                     ]);
                 }
 
-            }else if(isset($student->staff_id)){
-            array_push($formated_students, (object)[
-                'eno'=>$student->staff_id,//work number
-                'idcard'=>'staff',//ID number-use as stream
-                'cardid'=>$student->id,//card number-use as class
-                'uuid'=>$student->id,//uuid
-                'name'=>$student->name,//names
-                'type'=>$student->deleted_at==NULL?1:0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
-            ]);}else{
+            } else if (isset($student->staff_id)) {
+                array_push($formated_students, (object)[
+                    'eno' => $student->staff_id,//work number
+                    'idcard' => 'staff',//ID number-use as stream
+                    'cardid' => $student->id,//card number-use as class
+                    'uuid' => $student->id,//uuid
+                    'name' => $student->name,//names
+                    'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                ]);
+            } else {
                 // array_push($formated_students, (object)[
                 //     'NA'=>$student->id
                 //      ]);
             }
         }
-        $data=[
-            'employeeList'=> $formated_students,
-            'count'=>sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
-            'sum'=>sizeof($formated_students),//Total number of records in the population list
+        $data = [
+            'employeeList' => $formated_students,
+            'count' => sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
+            'sum' => sizeof($formated_students),//Total number of records in the population list
         ];
-        $myResponse=json_encode([
-            'code'=>200,
-            'success'=>true,
-            'messsage'=>'successful',
-            'data'=>$data
+        $myResponse = json_encode([
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => $data
         ]);
         return response($myResponse)
-        ->header('Content-Type', 'application/json');
+            ->header('Content-Type', 'application/json');
     }
 
     public function dataPullBack(Request $request)
     {
         $record = new DeviceRecord();
-        $record->data = 'dataPullBack|'.implode("|",$request->all());
+        $record->data = 'dataPullBack|' . implode("|", $request->all());
         $record->save();
         return json_encode([
-            'code'=>200,
-            'success'=>true,
-            'messsage'=>'successful',
-            'data'=>(time()*1000)
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => (time() * 1000)
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\DeviceRecord  $deviceRecord
+     * @param \App\Models\DeviceRecord $deviceRecord
      * @return \Illuminate\Http\Response
      */
     public function show(DeviceRecord $deviceRecord)
@@ -525,7 +544,7 @@ global $level;
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\DeviceRecord  $deviceRecord
+     * @param \App\Models\DeviceRecord $deviceRecord
      * @return \Illuminate\Http\Response
      */
     public function edit(DeviceRecord $deviceRecord)
@@ -536,8 +555,8 @@ global $level;
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\DeviceRecord  $deviceRecord
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\DeviceRecord $deviceRecord
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, DeviceRecord $deviceRecord)
@@ -548,7 +567,7 @@ global $level;
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\DeviceRecord  $deviceRecord
+     * @param \App\Models\DeviceRecord $deviceRecord
      * @return \Illuminate\Http\Response
      */
     public function destroy(DeviceRecord $deviceRecord)
@@ -556,19 +575,20 @@ global $level;
         //
     }
 
-    public function sendSms($guardian,$face_record,$time,$sms_time){
+    public function sendSms($guardian, $face_record, $time, $sms_time)
+    {
 
-        $date = date("h:i a",($time/1000));
+        $date = date("h:i a", ($time / 1000));
         $new_time = date("h:i a", strtotime('+3 hours', strtotime($date)));
-        $temp=round($face_record->temperature,1);
-        if($sms_time=='first'){
-            $templete1=Smstemplete::where('id','=',1)->get()->pluck('content');
+        $temp = round($face_record->temperature, 1);
+        if ($sms_time == 'first') {
+            $templete1 = Smstemplete::where('id', '=', 1)->get()->pluck('content');
 
-            $message1="Dear $guardian->fname, your child ".$face_record->student->first_name." ".$face_record->student->surname."  UPI:".$face_record->student->upi_no." has arrived at school at $new_time with a temperature of $temp ° ". $templete1[0];
+            $message1 = "Dear $guardian->fname, your child " . $face_record->student->first_name . " " . $face_record->student->surname . "  UPI:" . $face_record->student->upi_no . " has arrived at school at $new_time with a temperature of $temp ° " . $templete1[0];
             // dd($templete);
-        }else{
-            $templete1=Smstemplete::where('id','=',2)->get()->pluck('content');
-            $message1="Dear $guardian->fname, your child ".$face_record->student->first_name." ".$face_record->student->surname." UPI:".$face_record->student->upi_no." has left school for home at $new_time with a temperature of $temp ° ". $templete1[0];
+        } else {
+            $templete1 = Smstemplete::where('id', '=', 2)->get()->pluck('content');
+            $message1 = "Dear $guardian->fname, your child " . $face_record->student->first_name . " " . $face_record->student->surname . " UPI:" . $face_record->student->upi_no . " has left school for home at $new_time with a temperature of $temp ° " . $templete1[0];
         }
 
 
