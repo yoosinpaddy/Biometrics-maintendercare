@@ -57,10 +57,13 @@ class DeviceRecordController extends Controller
 
     public function updates(Request $request)
     {
-        $records = FaceRecord::whereDate('created_at', Carbon::today())->select('upi_no')->distinct()
+        $records = FaceRecord::where('time_taken','>', (String)Carbon::today()->valueOf())
+            ->where('time_taken','<', (String)Carbon::tomorrow()->valueOf())
+            ->select('upi_no')->distinct()
             ->get();
+        dd($records);
         foreach ($records as $key) {
-            $enter = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status', '=', 'enter')->where('upi_no', '=', $key->upi_no)
+            $enter = sizeof(FaceRecord::where('created_at', Carbon::today())->where('status', '=', 'enter')->where('upi_no', '=', $key->upi_no)
                 ->get());
             $exit = sizeof(FaceRecord::whereDate('created_at', Carbon::today())->where('status', '=', 'exit')->where('upi_no', '=', $key->upi_no)
                 ->get());
