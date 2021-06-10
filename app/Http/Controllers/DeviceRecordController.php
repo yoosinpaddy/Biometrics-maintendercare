@@ -68,7 +68,7 @@ class DeviceRecordController extends Controller
                 ->get());
 
             if($key->upi_no=="03891"){
-                dd($enter,$exit,$mnull,FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
+                dd($enter,$exit,$mnull,FaceRecord::whereDate('created_at', Carbon::yesterday())->where('upi_no', '=', $key->upi_no)
                     ->get());
 
             }
