@@ -95,7 +95,7 @@ class DeviceRecordController extends Controller
                     $r->save();
                 }
 
-            } else if ($enter == 0 && $exit == 1 && $mnull == 1) {
+            } else if ($enter == 0 && $exit == 1) {
                 $r = FaceRecord::whereDate('created_at', Carbon::today())->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
                 if ($r) {
