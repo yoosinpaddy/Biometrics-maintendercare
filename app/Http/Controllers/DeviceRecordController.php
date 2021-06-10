@@ -66,6 +66,8 @@ class DeviceRecordController extends Controller
                 ->get());
             $mnull = sizeof(FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                 ->get());
+
+            dd($enter,$exit,$mnull);
             if ($enter == 0 && $exit == 0 && $mnull > 1) {
                 $r = FaceRecord::whereDate('created_at', Carbon::yesterday())->whereNull('status')->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
@@ -96,7 +98,6 @@ class DeviceRecordController extends Controller
                 }
 
             } else if ($enter == 0 && $exit == 1) {
-                dd('One');
                 $r = FaceRecord::whereDate('created_at', Carbon::yesterday())->where('upi_no', '=', $key->upi_no)
                     ->get()->first();
                 if ($r) {
