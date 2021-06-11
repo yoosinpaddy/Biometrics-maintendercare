@@ -262,7 +262,7 @@ class DeviceRecordController extends Controller
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
                                 //disable sms
-                                // $this->sendSms($guardian,$faceRecord,$time_taken,'second');
+                                $this->sendSms($guardian,$faceRecord,$time_taken,'second');
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                         ->whereDate('created_at', Carbon::today())
@@ -282,7 +282,7 @@ class DeviceRecordController extends Controller
                         $faceRecord->status = 'enter';
                         $faceRecord->save();
                         //disable sms
-                        // $this->sendSms($guardian,$faceRecord,$time_taken,'first');
+                        $this->sendSms($guardian,$faceRecord,$time_taken,'first');
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
