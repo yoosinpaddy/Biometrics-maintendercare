@@ -227,7 +227,8 @@ class DeviceRecordController extends Controller
                 if ($guardian != null) {
                     $level = $level . "\nhasGuardian";
                     $faceR = FaceRecord::where('upi_no', '=', $upi_no)
-                        ->whereDate('created_at', Carbon::today())
+                        ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                        ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
                         ->orderby('id', 'DESC')
                         ->first();
                     // dd($faceR);
@@ -252,7 +253,9 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                    ->whereDate('created_at', Carbon::today())
+                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+
                                     ->get()) == 1) {
                                 $level = $level . "\nisExit";
                                 // dd('second');
@@ -287,7 +290,9 @@ class DeviceRecordController extends Controller
                     $level = $level . "\nnoGuardian";
 
                     $faceR = FaceRecord::where('upi_no', '=', $upi_no)
-                        ->whereDate('created_at', Carbon::today())
+                        ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                        ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+
                         ->orderby('id', 'DESC')
                         ->first();
                     // dd($faceR);
@@ -312,7 +317,8 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                    ->whereDate('created_at', Carbon::today())
+                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
                                     ->get()) == 1) {
                                 $level = $level . "\nisExit";
                                 // dd('second');
@@ -353,7 +359,9 @@ class DeviceRecordController extends Controller
 
 
                     $faceR = StaffFaceRecord::where('reg_no', '=', $upi_no)
-                        ->whereDate('created_at', Carbon::today())
+                        ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                        ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+
                         ->orderby('id', 'DESC')
                         ->first();
                     // dd($faceR);
@@ -375,7 +383,9 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(StaffFaceRecord::where('reg_no', '=', $upi_no)
-                                    ->whereDate('created_at', Carbon::today())
+                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+
                                     ->get()) == 1) {
                                 // dd('second');
                                 $faceRecord->status = 'exit';
