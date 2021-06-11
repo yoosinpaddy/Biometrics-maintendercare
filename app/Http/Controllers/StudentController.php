@@ -1039,7 +1039,7 @@ class StudentController extends Controller
     }
     public function sendSms($guardian, $message)
     {
-        if($guardian->id<279){
+        if($guardian->id<524){
             return;
         }
 
