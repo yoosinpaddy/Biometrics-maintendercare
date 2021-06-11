@@ -61,7 +61,7 @@ class DeviceRecordController extends Controller
             ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
             ->select('upi_no')->distinct()
             ->get();
-//        dd($records);
+        //        dd($records);
         foreach ($records as $key) {
             $enter = sizeof(FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
                 ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
@@ -77,10 +77,10 @@ class DeviceRecordController extends Controller
                 ->get());
 
             if ($key->upi_no == "03891") {
-//                dd($enter, $exit, $mnull, FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
-//                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-//                    ->where('upi_no', '=', $key->upi_no)
-//                    ->get());
+                //                dd($enter, $exit, $mnull, FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
+                //                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                //                    ->where('upi_no', '=', $key->upi_no)
+                //                    ->get());
 
             }
             if ($enter == 0 && $exit == 0 && $mnull > 1) {
@@ -109,7 +109,6 @@ class DeviceRecordController extends Controller
                     $r->status = 'enter';
                     $r->save();
                 }
-
             } else if ($enter == 1 && $exit == 0 && $mnull == 1) {
                 $r = FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
                     ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
@@ -119,7 +118,6 @@ class DeviceRecordController extends Controller
                     $r->status = 'exit';
                     $r->save();
                 }
-
             } else if ($enter == 0 && $exit == 1) {
                 $r = FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
                     ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
@@ -142,7 +140,6 @@ class DeviceRecordController extends Controller
                     if ($y) {
                         $y->status = 'exit';
                         $y->save();
-
                     }
                 }
             }
@@ -165,12 +162,12 @@ class DeviceRecordController extends Controller
         $record->data = 'recordUpload|ALl data:' . $coointer;
         $record->save();
         $myData = [
-            'openDoor' => 1,//Whether open relay, 0: no, 1: open
-            'tipSpeech' => "Thanks for verifying",//Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
-            'state' => 2,//0: Display text and broadcast voice at the same time
+            'openDoor' => 1, //Whether open relay, 0: no, 1: open
+            'tipSpeech' => "Thanks for verifying", //Display and voice over content It can be used \n to indicate a line swap, such as: "Zhang San Hello this consumption of $20 \n balance of $800."
+            'state' => 2, //0: Display text and broadcast voice at the same time
             //1: Only text is displayed, no voice is broadcasted.
             //2: Do not display text, only voice
-            'openDoor' => 1,//Whether
+            'openDoor' => 1, //Whether
         ];
         $myResponse = json_encode([
             'code' => 200,
@@ -182,7 +179,6 @@ class DeviceRecordController extends Controller
 
         return response($myResponse)
             ->header('Content-Type', 'application/json');
-
     }
 
     public function loopUpload($data, $request)
@@ -193,7 +189,7 @@ class DeviceRecordController extends Controller
         $time_taken = $data['scandatetime'];
         $device_serial = $data['macno'];
         $temperature = $data['temperature'];
-        $event = $data['operatorno'];//operatorno Punch Type :
+        $event = $data['operatorno']; //operatorno Punch Type :
         // face_0: successful face recognition
         // face_2: stranger brushes face
         // card_0: swipe card successfully
@@ -253,36 +249,41 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
-                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                                ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
 
-                                    ->get()) == 1) {
+                                ->get()) == 1) {
                                 $level = $level . "\nisExit";
                                 // dd('second');
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
                                 //disable sms
-                                $this->sendSms($guardian,$faceRecord,$time_taken,'second');
+                                $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+                                foreach ($guardians as $key) {
+                                    $this->sendSms($key, $faceRecord, $time_taken, 'second');
+                                }
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                        ->whereDate('created_at', Carbon::today())
-                                        ->get());
+                                    ->whereDate('created_at', Carbon::today())
+                                    ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
                                 $faceRecord->save();
                             }
                         }
-
-
                     } else {
                         $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
                         $faceRecord->status = 'enter';
                         $faceRecord->save();
-                        //disable sms
-                        $this->sendSms($guardian,$faceRecord,$time_taken,'first');
+                        //disable sms $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+
+                        $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+                        foreach ($guardians as $key) {
+                            $this->sendSms($key, $faceRecord, $time_taken, 'first');
+                        }
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
@@ -317,25 +318,23 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
-                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-                                    ->get()) == 1) {
+                                ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                                ->get()) == 1) {
                                 $level = $level . "\nisExit";
                                 // dd('second');
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                        ->whereDate('created_at', Carbon::today())
-                                        ->get());
+                                    ->whereDate('created_at', Carbon::today())
+                                    ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
                                 $faceRecord->save();
                             }
                         }
-
-
                     } else {
                         $level = $level . "\nnoFace";
                         //no record
@@ -343,7 +342,6 @@ class DeviceRecordController extends Controller
                         $faceRecord->status = 'enter';
                         $faceRecord->save();
                     }
-
                 }
             } else {
                 $level = $level . "\nisStaff";
@@ -383,10 +381,10 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(StaffFaceRecord::where('reg_no', '=', $upi_no)
-                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
-                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                                ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
 
-                                    ->get()) == 1) {
+                                ->get()) == 1) {
                                 // dd('second');
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
@@ -397,8 +395,6 @@ class DeviceRecordController extends Controller
                                 $faceRecord->save();
                             }
                         }
-
-
                     } else {
                         //no record
                         // dd('first');
@@ -450,23 +446,22 @@ class DeviceRecordController extends Controller
                 // }
                 if ($student->class != 9) {
                     array_push($formated_students, (object)[
-                        'eno' => $student->upi_no,//work number
-                        'idcard' => 'stream',//ID number-use as stream
-                        'cardid' => 'class ' . $student->class,//card number-use as class
-                        'uuid' => $student->id,//uuid
-                        'name' => $student->first_name . " " . $student->surname . ' (class ' . $student->class . ')',//names
-                        'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                        'eno' => $student->upi_no, //work number
+                        'idcard' => 'stream', //ID number-use as stream
+                        'cardid' => 'class ' . $student->class, //card number-use as class
+                        'uuid' => $student->id, //uuid
+                        'name' => $student->first_name . " " . $student->surname . ' (class ' . $student->class . ')', //names
+                        'type' => $student->deleted_at == NULL ? 1 : 0, //Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                     ]);
                 }
-
             } else if (isset($student->staff_id)) {
                 array_push($formated_students, (object)[
-                    'eno' => $student->staff_id,//work number
-                    'idcard' => 'staff',//ID number-use as stream
-                    'cardid' => $student->id,//card number-use as class
-                    'uuid' => $student->id,//uuid
-                    'name' => $student->name,//names
-                    'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                    'eno' => $student->staff_id, //work number
+                    'idcard' => 'staff', //ID number-use as stream
+                    'cardid' => $student->id, //card number-use as class
+                    'uuid' => $student->id, //uuid
+                    'name' => $student->name, //names
+                    'type' => $student->deleted_at == NULL ? 1 : 0, //Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                 ]);
             } else {
                 // array_push($formated_students, (object)[
@@ -476,8 +471,8 @@ class DeviceRecordController extends Controller
         }
         $data = [
             'employeeList' => $formated_students,
-            'count' => sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
-            'sum' => sizeof($formated_students),//Total number of records in the population list
+            'count' => sizeof($formated_students), //People List page size (get the people list by page, this is the pageSize per page)
+            'sum' => sizeof($formated_students), //Total number of records in the population list
         ];
         $myResponse = json_encode([
             'code' => 200,
@@ -519,23 +514,22 @@ class DeviceRecordController extends Controller
             if (isset($student->upi_no)) {
                 if ($student->class != 9) {
                     array_push($formated_students, (object)[
-                        'eno' => $student->upi_no,//work number
-                        'idcard' => 'stream',//ID number-use as stream
-                        'cardid' => 'class ' . $student->class,//card number-use as class
-                        'uuid' => $student->id,//uuid
-                        'name' => $student->name . ' (class ' . $student->class . ')',//names
-                        'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                        'eno' => $student->upi_no, //work number
+                        'idcard' => 'stream', //ID number-use as stream
+                        'cardid' => 'class ' . $student->class, //card number-use as class
+                        'uuid' => $student->id, //uuid
+                        'name' => $student->name . ' (class ' . $student->class . ')', //names
+                        'type' => $student->deleted_at == NULL ? 1 : 0, //Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                     ]);
                 }
-
             } else if (isset($student->staff_id)) {
                 array_push($formated_students, (object)[
-                    'eno' => $student->staff_id,//work number
-                    'idcard' => 'staff',//ID number-use as stream
-                    'cardid' => $student->id,//card number-use as class
-                    'uuid' => $student->id,//uuid
-                    'name' => $student->name,//names
-                    'type' => $student->deleted_at == NULL ? 1 : 0,//Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
+                    'eno' => $student->staff_id, //work number
+                    'idcard' => 'staff', //ID number-use as stream
+                    'cardid' => $student->id, //card number-use as class
+                    'uuid' => $student->id, //uuid
+                    'name' => $student->name, //names
+                    'type' => $student->deleted_at == NULL ? 1 : 0, //Type 0 Delete 1 Add Update Note: Deleting a person will delete them along with their access rights configuration.
                 ]);
             } else {
                 // array_push($formated_students, (object)[
@@ -545,8 +539,8 @@ class DeviceRecordController extends Controller
         }
         $data = [
             'employeeList' => $formated_students,
-            'count' => sizeof($formated_students),//People List page size (get the people list by page, this is the pageSize per page)
-            'sum' => sizeof($formated_students),//Total number of records in the population list
+            'count' => sizeof($formated_students), //People List page size (get the people list by page, this is the pageSize per page)
+            'sum' => sizeof($formated_students), //Total number of records in the population list
         ];
         $myResponse = json_encode([
             'code' => 200,
