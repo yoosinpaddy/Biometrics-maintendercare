@@ -1039,7 +1039,9 @@ class StudentController extends Controller
     }
     public function sendSms($guardian, $message)
     {
-        // dd($guardian->phone);
+        if($guardian->id<279){
+            return;
+        }
 
         $response = Http::asForm()->withHeaders([
             'apikey' => $_ENV['SMS_API_KEY'],
