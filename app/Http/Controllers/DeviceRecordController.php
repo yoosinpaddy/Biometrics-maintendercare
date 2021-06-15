@@ -64,6 +64,7 @@ class DeviceRecordController extends Controller
             //TODO delete this later
             ->where('status', '=', 'enter')
             ->select('upi_no')->distinct()
+            ->orderBy('id','ASC')
             ->get();
         //        dd($records);
         foreach ($records as $key) {
