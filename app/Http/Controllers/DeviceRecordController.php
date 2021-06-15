@@ -11,6 +11,7 @@ use App\Models\StaffFaceRecord;
 use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -109,6 +110,45 @@ class DeviceRecordController extends Controller
                     $r->status = 'enter';
                     $r->save();
                 }
+            } else if ($enter == 1 && $exit == 0) {
+                //TODO only today
+//                Send sms to parents
+            $upi_no=$key->upi_no;
+                $student = Student::where('upi_no', '=', $upi_no)->get()->first();
+                // dd($student->id);
+                if ($student != null) {
+
+                    $level = $level . "\nisStudent";
+                    $faceRecord = new FaceRecord();
+                    $faceRecord->upi_no = $upi_no;
+
+
+                    $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->first();
+                    if ($guardian != null) {
+                        $level = $level . "\nhasGuardian";
+                        $faceR = FaceRecord::where('upi_no', '=', $upi_no)
+                            ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                            ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                            ->where('status','=','enter')
+                            ->orderby('id', 'DESC')
+                            ->first();
+                        // dd($faceR);
+                        if ($faceR != null) {
+                            $level = $level . "\nhasPrevFace";
+
+                            $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+                            foreach ($guardians as $key) {
+                                $this->sendSms($key, $faceRecord, $faceR->time_taken, 'first');
+                            }
+                        }
+
+                        // return back()->with('success', 'Sms sent successfully');
+                    }
+                }
+
+
+
+                /////////////////////////
             } else if ($enter == 1 && $exit == 0 && $mnull == 1) {
                 $r = FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
                     ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
@@ -611,6 +651,97 @@ class DeviceRecordController extends Controller
     }
 
     public function sendSms($guardian, $face_record, $time, $sms_time)
+    {
+
+        $date = date("h:i a", ($time / 1000));
+        $new_time = date("h:i a", strtotime('+3 hours', strtotime($date)));
+        $temp = round($face_record->temperature, 1);
+        if ($sms_time == 'first') {
+            $templete1 = Smstemplete::where('id', '=', 1)->get()->pluck('content');
+
+            $message1 = "Dear $guardian->fname, your child " . $face_record->student->first_name . " " . $face_record->student->surname . "  UPI:" . $face_record->student->upi_no . " has arrived at school at $new_time with a temperature of $temp " . $templete1[0];
+            // dd($templete);
+        } else {
+            $templete1 = Smstemplete::where('id', '=', 2)->get()->pluck('content');
+            $message1 = "Dear $guardian->fname, your child " . $face_record->student->first_name . " " . $face_record->student->surname . " UPI:" . $face_record->student->upi_no . " has left school for home at $new_time with a temperature of $temp " . $templete1[0];
+        }
+
+
+        $response = Http::asForm()->withHeaders([
+            'apikey' => $_ENV['SMS_API_KEY'],
+        ])->post('https://api.africastalking.com/version1/messaging', [
+            'username' => $_ENV['SMS_USERNAME'],
+            'from' => $_ENV['SMS_FROM'],
+            'message' => $message1,
+            'to' => $guardian->phone,
+        ]);
+        if ($response->successful()) {
+            // dd($response->json()['responses'][0]['response-description']);
+            return back()->with('success', 'Message sent successfully');
+        }
+
+        // Determine if the status code is >= 400...
+        if ($response->failed()) {
+            // dd($response->json()['errors']['message'][0]);
+            return back()->withErrors([
+                'message' => $response->body(),
+            ]);
+        }
+
+        // Determine if the response has a 400 level status code...
+        if ($response->clientError()) {
+
+            return back()->withErrors([
+                'message' => 'Something went wrong, could not send sms',
+            ]);
+        }
+
+        // Determine if the response has a 500 level status code...
+        if ($response->serverError()) {
+
+            return back()->withErrors([
+                'message' => 'Something went wrong, could not send sms',
+            ]);
+        }
+
+        // $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
+        //     'apikey'=>$_ENV['SMS_API_KEY'],
+        //     'partnerID'=>$_ENV['SMS_PATNER_ID'],
+        //     'shortcode'=>$_ENV['SMS_SHORT_CODE'],
+        //     'message'=>$message1,
+        //     'mobile'=>$guardian->phone,
+        // ]);
+        // if($response->successful()){
+        //     // dd($response->json()['responses'][0]['response-description']);
+        //     // return back()->with('success', $response->json()['responses'][0]['response-description']);
+        // }
+
+        // // Determine if the status code is >= 400...
+        // if($response->failed()){
+
+        //     // return back()->withErrors([
+        //     //     'message' => 'Something went wrong, could not send sms',
+        //     // ]);
+        // }
+
+        // // Determine if the response has a 400 level status code...
+        // if($response->clientError()){
+
+        //     // return back()->withErrors([
+        //     //     'message' => 'Something went wrong, could not send sms',
+        //     // ]);
+        // }
+
+        // // Determine if the response has a 500 level status code...
+        // if($response->serverError()){
+
+        //     // return back()->withErrors([
+        //     //     'message' => 'Something went wrong, could not send sms',
+        //     // ]);
+        // }
+
+    }
+    public function sendPremiumSms($guardian, $face_record, $time, $sms_time)
     {
 
         $date = date("h:i a", ($time / 1000));
