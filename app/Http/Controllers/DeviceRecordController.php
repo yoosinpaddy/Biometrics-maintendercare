@@ -142,6 +142,7 @@ class DeviceRecordController extends Controller
                             $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
                             foreach ($guardians as $key) {
                                 if ($key->upi_no == "9999") {
+                                    $level = $level . "\nFound him now";
                                     $this->sendPremiumSms($key, $faceR, $faceR->time_taken, 'first');
 
                                 } else {

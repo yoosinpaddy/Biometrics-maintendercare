@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guardian;
+use App\Models\Smstemplete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -125,14 +126,20 @@ class GuardianController extends Controller
         ]);
     }
 
-    public function sendSms($guardian,$message){
-        $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
-            'apikey'=>$_ENV['SMS_API_KEY'],
-            'partnerID'=>$_ENV['SMS_PATNER_ID'],
-            'shortcode'=>$_ENV['SMS_SHORT_CODE'],
-            'message'=>$message,
-            'mobile'=>$guardian->phone,
+    public function sendSms($guardian, $message)
+    {
+
+
+
+        $response = Http::asForm()->withHeaders([
+            'apikey' => $_ENV['SMS_API_KEY'],
+        ])->post('https://api.africastalking.com/version1/messaging', [
+            'username' => $_ENV['SMS_USERNAME'],
+            'from' => $_ENV['SMS_FROM'],
+            'message' => $message,
+            'to' => $guardian->phone,
         ]);
+
         if($response->successful()){
             // dd($response->json()['responses'][0]['response-description']);
             return back()->with('success', $response->json()['responses'][0]['response-description']);
@@ -163,4 +170,42 @@ class GuardianController extends Controller
         }
 
     }
+//    public function sendSms($guardian,$message){
+//        $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
+//            'apikey'=>$_ENV['SMS_API_KEY'],
+//            'partnerID'=>$_ENV['SMS_PATNER_ID'],
+//            'shortcode'=>$_ENV['SMS_SHORT_CODE'],
+//            'message'=>$message,
+//            'mobile'=>$guardian->phone,
+//        ]);
+//        if($response->successful()){
+//            // dd($response->json()['responses'][0]['response-description']);
+//            return back()->with('success', $response->json()['responses'][0]['response-description']);
+//        }
+//
+//        // Determine if the status code is >= 400...
+//        if($response->failed()){
+//
+//            return back()->withErrors([
+//                'message' => 'Something went wrong, could not send sms',
+//            ]);
+//        }
+//
+//        // Determine if the response has a 400 level status code...
+//        if($response->clientError()){
+//
+//            return back()->withErrors([
+//                'message' => 'Something went wrong, could not send sms',
+//            ]);
+//        }
+//
+//        // Determine if the response has a 500 level status code...
+//        if($response->serverError()){
+//
+//            return back()->withErrors([
+//                'message' => 'Something went wrong, could not send sms',
+//            ]);
+//        }
+//
+//    }
 }
