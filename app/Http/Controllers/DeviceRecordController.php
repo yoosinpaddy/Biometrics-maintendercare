@@ -58,6 +58,7 @@ class DeviceRecordController extends Controller
 
     public function updates(Request $request)
     {
+        dd(ini_get('max_execution_time'));
         global $level;
         $records = FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
             ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
@@ -784,13 +785,13 @@ class DeviceRecordController extends Controller
             'keyword' => 'yes',
         ]);
         if ($response->successful()) {
-             dd($response->json());
+//             dd($response->json());
             return back()->with('success', 'Message sent successfully');
         }
 
         // Determine if the status code is >= 400...
         if ($response->failed()) {
-             dd($response->json());
+//             dd($response->json());
             return back()->withErrors([
                 'message' => $response->body(),
             ]);
