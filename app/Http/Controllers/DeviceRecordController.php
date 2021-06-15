@@ -151,9 +151,15 @@ class DeviceRecordController extends Controller
 
                                 }
                             }
+                        }else{
+                            $level = $level . "\nnoPrevFace";
+
                         }
 
                         // return back()->with('success', 'Sms sent successfully');
+                    }else{
+                        $level = $level . "\nnoGuardian";
+
                     }
                 }
 
