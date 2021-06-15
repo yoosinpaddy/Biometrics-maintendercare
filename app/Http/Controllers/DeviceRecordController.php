@@ -81,6 +81,7 @@ class DeviceRecordController extends Controller
                 ->get());
 
             if ($key->upi_no == "9999") {
+                $level = $level . "\nFound him now top";
                 //                dd($enter, $exit, $mnull, FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
                 //                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
                 //                    ->where('upi_no', '=', $key->upi_no)
