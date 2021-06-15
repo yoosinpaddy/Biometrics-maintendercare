@@ -322,7 +322,7 @@ class DeviceRecordController extends Controller
                                 //disable sms
                                 $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
                                 foreach ($guardians as $key) {
-                                    $this->sendSms($key, $faceRecord, $time_taken, 'second');
+                                    $this->sendPremiumSms($key, $faceRecord, $time_taken, 'second');
                                 }
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
@@ -344,7 +344,7 @@ class DeviceRecordController extends Controller
 
                         $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
                         foreach ($guardians as $key) {
-                            $this->sendSms($key, $faceRecord, $time_taken, 'first');
+                            $this->sendPremiumSms($key, $faceRecord, $time_taken, 'first');
                         }
                     }
 
