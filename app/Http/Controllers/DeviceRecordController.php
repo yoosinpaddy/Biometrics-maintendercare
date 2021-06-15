@@ -790,13 +790,13 @@ class DeviceRecordController extends Controller
             'keyword' => 'yes',
         ]);
         if ($response->successful()) {
-             dd($response->json());
+             dd('succ'.$response->body());
             return back()->with('success', 'Message sent successfully');
         }
 
         // Determine if the status code is >= 400...
         if ($response->failed()) {
-             dd($response->json());
+             dd('failed'.$response->body());
             return back()->withErrors([
                 'message' => $response->body(),
             ]);
@@ -805,6 +805,7 @@ class DeviceRecordController extends Controller
         // Determine if the response has a 400 level status code...
         if ($response->clientError()) {
 
+            dd('clientError'.$response->body());
             return back()->withErrors([
                 'message' => 'Something went wrong, could not send sms'.$response->body(),
             ]);
@@ -813,6 +814,7 @@ class DeviceRecordController extends Controller
         // Determine if the response has a 500 level status code...
         if ($response->serverError()) {
 
+            dd('serverError'.$response->body());
             return back()->withErrors([
                 'message' => 'Something went wrong, could not send sms'.$response->body(),
             ]);
