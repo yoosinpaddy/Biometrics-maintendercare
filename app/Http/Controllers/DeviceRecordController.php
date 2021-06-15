@@ -58,6 +58,7 @@ class DeviceRecordController extends Controller
 
     public function updates(Request $request)
     {
+        global $level;
         $records = FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
             ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
             ->select('upi_no')->distinct()
@@ -184,7 +185,7 @@ class DeviceRecordController extends Controller
                 }
             }
         }
-        dd('done');
+        dd('done'.$level);
     }
 
     public $level = "Start---\n";
