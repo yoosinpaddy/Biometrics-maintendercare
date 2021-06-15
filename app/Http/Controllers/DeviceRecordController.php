@@ -139,14 +139,14 @@ class DeviceRecordController extends Controller
                             ->first();
                         // dd($faceR);
                         if ($faceR != null) {
-                            $level = $level . "\nhasPrevFace:".$faceR->phone;
+                            $level = $level . "\nhasPrevFace:".$student->id;
 
                             $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
-                            foreach ($guardians as $key) {
-                                $level = $level . "\nFor each:".$key->phone;
+                            foreach ($guardians as $key2) {
+                                $level = $level . "\nFor each:".$key2->phone;
                                 if ($faceR->upi_no == "9999") {
                                     $level = $level . "\nFound him now";
-                                    $this->sendPremiumSms($key, $faceR, $faceR->time_taken, 'first');
+                                    $this->sendPremiumSms($key2, $faceR, $faceR->time_taken, 'first');
 
                                 } else {
 
