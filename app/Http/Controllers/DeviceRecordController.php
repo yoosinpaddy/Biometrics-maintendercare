@@ -61,6 +61,8 @@ class DeviceRecordController extends Controller
         global $level;
         $records = FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
             ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+            //TODO delete this later
+            ->where('status', '=', 'enter')
             ->select('upi_no')->distinct()
             ->get();
         //        dd($records);
@@ -78,7 +80,7 @@ class DeviceRecordController extends Controller
                 ->whereNull('status')->where('upi_no', '=', $key->upi_no)
                 ->get());
 
-            if ($key->upi_no == "03891") {
+            if ($key->upi_no == "9999") {
                 //                dd($enter, $exit, $mnull, FaceRecord::where('time_taken', '>', (string)Carbon::today()->valueOf())
                 //                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
                 //                    ->where('upi_no', '=', $key->upi_no)
@@ -111,10 +113,10 @@ class DeviceRecordController extends Controller
                     $r->status = 'enter';
                     $r->save();
                 }
-            } else if ($enter == 1 && $exit == 0) {
+            } else if ($enter == 1) {
                 //TODO only today
 //                Send sms to parents
-            $upi_no=$key->upi_no;
+                $upi_no = $key->upi_no;
                 $student = Student::where('upi_no', '=', $upi_no)->get()->first();
                 // dd($student->id);
                 if ($student != null) {
@@ -130,7 +132,7 @@ class DeviceRecordController extends Controller
                         $faceR = FaceRecord::where('upi_no', '=', $upi_no)
                             ->where('time_taken', '>', (string)Carbon::today()->valueOf())
                             ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-                            ->where('status','=','enter')
+                            ->where('status', '=', 'enter')
                             ->orderby('id', 'DESC')
                             ->first();
                         // dd($faceR);
@@ -139,14 +141,18 @@ class DeviceRecordController extends Controller
 
                             $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
                             foreach ($guardians as $key) {
-                                $this->sendSms($key, $faceRecord, $faceR->time_taken, 'first');
+                                if ($key->upi_no == "9999") {
+                                    $this->sendPremiumSms($key, $faceR, $faceR->time_taken, 'first');
+
+                                } else {
+
+                                }
                             }
                         }
 
                         // return back()->with('success', 'Sms sent successfully');
                     }
                 }
-
 
 
                 /////////////////////////
@@ -185,7 +191,7 @@ class DeviceRecordController extends Controller
                 }
             }
         }
-        dd('done'.$level);
+        dd('done' . $level);
     }
 
     public $level = "Start---\n";
@@ -290,10 +296,9 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                ->where('time_taken', '>', (string)Carbon::today()->valueOf())
-                                ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-
-                                ->get()) == 1) {
+                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                                    ->get()) == 1) {
                                 $level = $level . "\nisExit";
                                 // dd('second');
                                 $faceRecord->status = 'exit';
@@ -305,8 +310,8 @@ class DeviceRecordController extends Controller
                                 }
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                    ->whereDate('created_at', Carbon::today())
-                                    ->get());
+                                        ->whereDate('created_at', Carbon::today())
+                                        ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -334,7 +339,6 @@ class DeviceRecordController extends Controller
                     $faceR = FaceRecord::where('upi_no', '=', $upi_no)
                         ->where('time_taken', '>', (string)Carbon::today()->valueOf())
                         ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-
                         ->orderby('id', 'DESC')
                         ->first();
                     // dd($faceR);
@@ -359,17 +363,17 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                ->where('time_taken', '>', (string)Carbon::today()->valueOf())
-                                ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-                                ->get()) == 1) {
+                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                                    ->get()) == 1) {
                                 $level = $level . "\nisExit";
                                 // dd('second');
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
-                                    ->whereDate('created_at', Carbon::today())
-                                    ->get());
+                                        ->whereDate('created_at', Carbon::today())
+                                        ->get());
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
@@ -400,7 +404,6 @@ class DeviceRecordController extends Controller
                     $faceR = StaffFaceRecord::where('reg_no', '=', $upi_no)
                         ->where('time_taken', '>', (string)Carbon::today()->valueOf())
                         ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-
                         ->orderby('id', 'DESC')
                         ->first();
                     // dd($faceR);
@@ -422,10 +425,9 @@ class DeviceRecordController extends Controller
                             //check if its the second record
 
                             if (sizeof(StaffFaceRecord::where('reg_no', '=', $upi_no)
-                                ->where('time_taken', '>', (string)Carbon::today()->valueOf())
-                                ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
-
-                                ->get()) == 1) {
+                                    ->where('time_taken', '>', (string)Carbon::today()->valueOf())
+                                    ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
+                                    ->get()) == 1) {
                                 // dd('second');
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
@@ -742,6 +744,7 @@ class DeviceRecordController extends Controller
         // }
 
     }
+
     public function sendPremiumSms($guardian, $face_record, $time, $sms_time)
     {
 
@@ -761,11 +764,14 @@ class DeviceRecordController extends Controller
 
         $response = Http::asForm()->withHeaders([
             'apikey' => $_ENV['SMS_API_KEY'],
-        ])->post('https://api.africastalking.com/version1/messaging', [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ])->post('https://content.africastalking.com/version1/messaging', [
             'username' => $_ENV['SMS_USERNAME'],
-            'from' => $_ENV['SMS_FROM'],
+            'from' => $_ENV['SMS_SHORT_CODE'],
             'message' => $message1,
             'to' => $guardian->phone,
+            'keyword' => 'yes',
         ]);
         if ($response->successful()) {
             // dd($response->json()['responses'][0]['response-description']);
