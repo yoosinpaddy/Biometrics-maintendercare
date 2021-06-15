@@ -63,7 +63,7 @@ class DeviceRecordController extends Controller
             ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
             //TODO delete this later
             ->where('status', '=', 'enter')
-            ->select('upi_no')->distinct()
+            ->select('upi_no','id')->distinct()
             ->orderBy('id','ASC')
             ->get();
         //        dd($records);
