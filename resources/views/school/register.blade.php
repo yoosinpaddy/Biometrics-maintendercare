@@ -9,7 +9,7 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="{{route('dashboard')}}"><b>Bio</b>Metrics</a>
+            <a href="{{route('dashboard')}}"><b>Tender </b>Care</a>
         </div>
         <!-- /.login-logo -->
         <div class="card">

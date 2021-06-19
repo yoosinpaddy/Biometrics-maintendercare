@@ -5,7 +5,7 @@
     <a href="{{route('default')}}" class="brand-link">
         <img style="background: #ffffff;border: 2px solid;border-radius: 50px 20px;margin-top: 5px;max-width: 80px;" src="{{route('default')}}/images/logo.png" width="236" height="40" alt="My writer Logo">
 
-      <span class="brand-text font-weight-light">Biometrics</span>
+      <span class="brand-text font-weight-light">Tender Care</span>
     </a>
 
     <!-- Sidebar -->
