@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\FaceRecord;
 use App\Models\Guardian;
+use App\Models\PremiumReports;
 use App\Models\Smstemplete;
 use App\Models\Staff;
 use App\Models\StaffFaceRecord;
 use App\Models\Stream;
 use App\Models\Student;
+use App\Models\SubscriptionReports;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
@@ -793,6 +795,98 @@ class StudentController extends Controller
             'current_streamv' => $current_streamv,
             'day' => $day,
         ]);
+    }
+    public function delivery_reports_sms(Request $request)
+    {
+        $successful=sizeof(PremiumReports::where('status','=','Submitted')->get());
+        $subscribers=sizeof(SubscriptionReports::where('updateType','!=','deletion')->get());
+        $insufficient=sizeof(PremiumReports::where('failureReason','like','%InsufficientCredit%')->get());
+
+        $reports=PremiumReports::where('status','=','Success')
+            ->where('status','=','Failed')
+            ->orderBy('id', 'DESC')
+            ->paginate(50);
+
+        return view('sms.premiumCallback', [
+            'successful' => $successful,
+            'subscribers' => $subscribers,
+            'insufficient' => $insufficient,
+            'reports' => $reports,
+        ]);
+
+//        $classes = Student::select('class')->where('class', '!=', '9')->groupBy('class')->get();
+//        $streams = Stream::all();
+//
+//
+//        $allStudents = array();
+//        $title = '';
+//        $current_class = 'all';
+//        $current_stream = 'all';
+//        $current_streamv = 'all';
+//        $day = $request->day;
+//        $myvar = strtotime($day) * 1000;
+//        $myvar2 = strtotime('+24 hours', strtotime($day)) * 1000;
+//        $key1 = 2;
+//        $myRecords = array();
+//        // dd(sizeof($myRecords));
+//        // dd($myRecords);
+//        if ($request->class != 'all') {
+//            $current_class = $request->class;
+//            if ($request->stream != 'all') {
+//                $stream_name = Stream::where('id', '=', $request->stream)->get();
+//                $title = 'Class ' . $request->class . '-' . $stream_name[0]->name;
+//                $current_stream = $stream_name[0]->name;
+//                $current_streamv = $request->stream;
+//                $allStudents = Student::where('class', '=', $request->class)->where('stream', '=', $request->stream)->paginate(300);
+//
+//                $myRecords = FaceRecord::join('students', function ($join) {
+//                    $join->on('students.upi_no', '=', 'face_records.upi_no');
+//                })->where('time_taken', '>', $myvar)
+//                    ->where('time_taken', '<', $myvar2)
+//                    ->where('students.class', '=', $request->class)->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+//            } else {
+//                $title = 'Class ' . $request->class;
+//                $allStudents = Student::where('class', '=', $request->class)->paginate(300);
+//                $myRecords = FaceRecord::join('students', function ($join) {
+//                    $join->on('students.upi_no', '=', 'face_records.upi_no');
+//                })->where('time_taken', '>', $myvar)
+//                    ->where('time_taken', '<', $myvar2)
+//                    ->whereNotNull('face_records.status')->where('students.class', '=', $request->class)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+//            }
+//        } else {
+//            if ($request->stream != 'all') {
+//                $stream_name = Stream::where('id', '=', $request->stream)->get();
+//                $title = 'All Classes of Stream ' . $stream_name[0]->name;
+//                // dd($stream_name[0]->name);
+//                $current_stream = $stream_name[0]->name;
+//                $current_streamv = $request->stream;
+//                $allStudents = Student::where('stream', '=', $request->stream)->paginate(300);
+//                $myRecords = FaceRecord::join('students', function ($join) {
+//                    $join->on('students.upi_no', '=', 'face_records.upi_no');
+//                })->where('time_taken', '>', $myvar)
+//                    ->where('time_taken', '<', $myvar2)
+//                    ->whereNotNull('face_records.status')->where('students.stream', '=', $request->stream)->orderBy('face_records.created_at', 'ASC')->paginate(300);
+//            } else {
+//                $title = 'All Classes in all Streams';
+//                $allStudents = Student::paginate(300);
+//                $myRecords = FaceRecord::whereNotNull('face_records.status')->where('time_taken', '>', $myvar)
+//                    ->where('time_taken', '<', $myvar2)
+//                    ->orderBy('face_records.created_at', 'ASC')->paginate(300);
+//            }
+//        }
+//        // dd($myRecords[0]->student);
+//        $parents = Guardian::paginate(100);
+//        //    dd($parents[0]->student);
+//        return view('sms.premiumCallback',['']);
+//        return view('school.reports', [
+//            'parents' => $parents, 'allStudents' => $allStudents,
+//            'classes' => $classes, 'streams' => $streams, 'title' => $title,
+//            'myRecords' => $myRecords,
+//            'current_class' => $current_class,
+//            'current_stream' => $current_stream,
+//            'current_streamv' => $current_streamv,
+//            'day' => $day,
+//        ]);
     }
     public function send_bulk_sms(Request $request)
     {

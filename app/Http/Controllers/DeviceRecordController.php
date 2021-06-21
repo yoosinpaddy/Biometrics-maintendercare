@@ -10,6 +10,7 @@ use App\Models\Smstemplete;
 use App\Models\Staff;
 use App\Models\StaffFaceRecord;
 use App\Models\Student;
+use App\Models\SubscriptionReports;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -639,6 +640,26 @@ class DeviceRecordController extends Controller
             $premiumsms->failureReason=$request->failureReason;
         }
         $premiumsms->retryCount=$request->retryCount;
+        $premiumsms->save();
+        return response()->json([
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => (time() * 1000)
+        ]);
+    }
+    public function subscriptionCallback(Request $request)
+    {
+        $record = new DeviceRecord();
+        $record->data = 'subscriptionCallback|' . implode("|", $request->all());
+        $record->save();
+        $premiumsms=new SubscriptionReports();
+        if (sizeof(SubscriptionReports::where('phoneNumber','=',$request->phoneNumber)->get())>0) {
+            $premiumsms=SubscriptionReports::where('phoneNumber','=',$request->phoneNumber)->get()->first();
+        }
+        $premiumsms->shortCode=$request->shortCode;
+        $premiumsms->keyword=$request->keyword;
+        $premiumsms->phoneNumber=$request->phoneNumber;
         $premiumsms->save();
         return response()->json([
             'code' => 200,

@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/staff/reports/poster/{type}', [StudentController::class, 'staffReportsPoster'])->name('staff.reports.poster');
     Route::post('/students/poster', [StudentController::class, 'studentsPoster'])->name('school.students.poster');
     Route::get('/reports/sms', [StudentController::class, 'reports_sms'])->name('school.reports.sms');
+    Route::get('/delivery/reports/sms', [StudentController::class, 'delivery_reports_sms'])->name('delivery.reports.sms');
     Route::get('/streams', [StudentController::class, 'streams'])->name('school.streams');
     Route::post('/streams/new', [StudentController::class, 'streamsNew'])->name('new.streams');
     Route::post('/streams/update', [StudentController::class, 'streamsUpdate'])->name('update.streams');
@@ -101,5 +102,6 @@ Route::post('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 
 //SMS CALLBACKS
 Route::post('/device/smsCallback', [DeviceRecordController::class, 'smsCallback']);
 Route::post('/device/normalSmsCallback', [DeviceRecordController::class, 'normalSmsCallback']);
+Route::post('/device/subscriptionCallback', [DeviceRecordController::class, 'subscriptionCallback']);
 
 Route::get('updates', [DeviceRecordController::class, 'updates']);
