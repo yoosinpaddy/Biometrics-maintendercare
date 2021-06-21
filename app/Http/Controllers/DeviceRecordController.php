@@ -624,6 +624,19 @@ class DeviceRecordController extends Controller
         ]);
     }
 
+    public function smsCallback(Request $request)
+    {
+        $record = new DeviceRecord();
+        $record->data = 'smsCallback|' . implode("|", $request->all());
+        $record->save();
+        return json_encode([
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => (time() * 1000)
+        ]);
+    }
+
     /**
      * Display the specified resource.
      *
