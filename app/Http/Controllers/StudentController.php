@@ -804,7 +804,7 @@ class StudentController extends Controller
 
         $reports=PremiumReports::where('status','=','Success')
             ->where('status','=','Failed')
-            ->orderBy('id', 'DESC')
+            ->orderBy('updated_at', 'DESC')
             ->paginate(50);
 
         return view('sms.premiumCallback', [
