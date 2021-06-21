@@ -103,7 +103,7 @@
               </p>
             </a>
           </li>
-            @if (\Illuminate\Support\Facades\Auth::user()->id==1)
+            @if (\Illuminate\Support\Facades\Auth::user()->id=='1')
                 <li class="nav-item">
                     <a href="{{route('delivery.reports.sms')}}" class="nav-link @if(Route::is('delivery.reports.sms'))active @endif">
                         <i class="fas fa-inbox"></i>              <p>
