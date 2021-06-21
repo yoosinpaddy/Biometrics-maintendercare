@@ -631,7 +631,7 @@ class DeviceRecordController extends Controller
         $record->data = 'smsCallback|' . implode("|", $request->all());
         $record->save();
         $premiumsms=new PremiumReports();
-        $premiumsms->id=$request->id;
+        $premiumsms->sms_id=$request->id;
         $premiumsms->status=$request->status;
         $premiumsms->phoneNumber=$request->phoneNumber;
         $premiumsms->networkCode=$request->networkCode;

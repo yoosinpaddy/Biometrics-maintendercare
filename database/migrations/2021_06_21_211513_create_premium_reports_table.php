@@ -15,7 +15,7 @@ class CreatePremiumReportsTable extends Migration
     {
         Schema::create('premium_reports', function (Blueprint $table) {
             $table->id();
-            $table->string('id');
+            $table->string('sms_id');
             $table->string('status');//Sent: The message has successfully been sent by our network.
                                             //Submitted: The message has successfully been submitted to the MSP (Mobile Service Provider).
                                             //Buffered: The message has been queued by the MSP.
