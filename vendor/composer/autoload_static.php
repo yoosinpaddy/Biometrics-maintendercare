@@ -551,6 +551,7 @@ class ComposerStaticInit54f7457f61676b63f4a2d969d28bc89b
         'App\\Models\\DeviceRecord' => __DIR__ . '/../..' . '/app/Models/DeviceRecord.php',
         'App\\Models\\FaceRecord' => __DIR__ . '/../..' . '/app/Models/FaceRecord.php',
         'App\\Models\\Guardian' => __DIR__ . '/../..' . '/app/Models/Guardian.php',
+        'App\\Models\\PremiumReports' => __DIR__ . '/../..' . '/app/Models/PremiumReports.php',
         'App\\Models\\Register' => __DIR__ . '/../..' . '/app/Models/Register.php',
         'App\\Models\\Smstemplete' => __DIR__ . '/../..' . '/app/Models/Smstemplete.php',
         'App\\Models\\Staff' => __DIR__ . '/../..' . '/app/Models/Staff.php',

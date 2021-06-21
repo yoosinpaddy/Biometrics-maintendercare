@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DeviceRecord;
 use App\Models\FaceRecord;
 use App\Models\Guardian;
+use App\Models\PremiumReports;
 use App\Models\Smstemplete;
 use App\Models\Staff;
 use App\Models\StaffFaceRecord;
@@ -629,7 +630,17 @@ class DeviceRecordController extends Controller
         $record = new DeviceRecord();
         $record->data = 'smsCallback|' . implode("|", $request->all());
         $record->save();
-        return json_encode([
+        $premiumsms=new PremiumReports();
+        $premiumsms->id=$request->id;
+        $premiumsms->status=$request->status;
+        $premiumsms->phoneNumber=$request->phoneNumber;
+        $premiumsms->networkCode=$request->networkCode;
+        if ($request->failureReason) {
+            $premiumsms->failureReason=$request->failureReason;
+        }
+        $premiumsms->retryCount=$request->retryCount;
+        $premiumsms->save();
+        return response()->json([
             'code' => 200,
             'success' => true,
             'messsage' => 'successful',

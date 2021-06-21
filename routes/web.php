@@ -3,6 +3,7 @@
 use App\Http\Controllers\DeviceRecordController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\InitializeController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\StudentController;
@@ -77,7 +78,10 @@ Route::post('/forgotPassword', [StudentController::class, 'forgotPassword'])->na
 Route::get('/recoverPassword', [StudentController::class, 'recoverPassword'])->name('school.recoverPassword');
 Route::get('/forgotPassword', [StudentController::class, 'forgotPassword'])->name('school.forgotPassword');
 
-
+Route::get('/migrate', function(){
+    Artisan::call('migrate');
+    dd('migrated!');
+});
 
 
 // Route::get('/device/{school_id}/posts', [PostController::class, 'index']);

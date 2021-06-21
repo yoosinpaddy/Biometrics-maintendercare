@@ -44,6 +44,7 @@ return array(
     'App\\Models\\DeviceRecord' => $baseDir . '/app/Models/DeviceRecord.php',
     'App\\Models\\FaceRecord' => $baseDir . '/app/Models/FaceRecord.php',
     'App\\Models\\Guardian' => $baseDir . '/app/Models/Guardian.php',
+    'App\\Models\\PremiumReports' => $baseDir . '/app/Models/PremiumReports.php',
     'App\\Models\\Register' => $baseDir . '/app/Models/Register.php',
     'App\\Models\\Smstemplete' => $baseDir . '/app/Models/Smstemplete.php',
     'App\\Models\\Staff' => $baseDir . '/app/Models/Staff.php',
