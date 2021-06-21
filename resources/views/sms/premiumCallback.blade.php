@@ -109,7 +109,7 @@
                             <div class="inner">
                                 <h3>{{$insufficient}}</h3>
 
-                                <p>Failed Sms(Insufficient credit)</p>
+                                <p>Failed Sms (Insufficient credit)</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-pie-graph"></i>
