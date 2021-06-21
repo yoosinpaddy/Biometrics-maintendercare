@@ -94,6 +94,8 @@ Route::post('/device/{school_id}/dataPullT', [DeviceRecordController::class, 'da
 // Route::get('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBackg']);
 Route::post('/device/{school_id}/dataPullBack', [DeviceRecordController::class, 'dataPullBack']);
 
+//SMS CALLBACKS
 Route::post('/device/smsCallback', [DeviceRecordController::class, 'smsCallback']);
+Route::post('/device/normalSmsCallback', [DeviceRecordController::class, 'normalSmsCallback']);
 
 Route::get('updates', [DeviceRecordController::class, 'updates']);

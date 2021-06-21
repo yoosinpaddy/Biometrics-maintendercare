@@ -1039,14 +1039,14 @@ class StudentController extends Controller
     }
     public function sendSms($guardian, $message)
     {
-        if($guardian->id<524){
-            return;
-        }
+//        if($guardian->id<524){
+//            return;
+//        }
 
         $response = Http::asForm()->withHeaders([
-            'apikey' => $_ENV['SMS_API_KEY'],
+            'apikey' => $_ENV['SMS_NORMAL_API_KEY'],
         ])->post('https://api.africastalking.com/version1/messaging', [
-            'username' => $_ENV['SMS_USERNAME'],
+            'username' => $_ENV['SMS_NORMAL_USERNAME'],
             'from' => $_ENV['SMS_FROM'],
             'message' => $message,
             'to' => $guardian->phone,

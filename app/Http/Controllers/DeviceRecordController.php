@@ -636,6 +636,18 @@ class DeviceRecordController extends Controller
             'data' => (time() * 1000)
         ]);
     }
+    public function normalSmsCallback(Request $request)
+    {
+        $record = new DeviceRecord();
+        $record->data = 'normalSmsCallback|' . implode("|", $request->all());
+        $record->save();
+        return json_encode([
+            'code' => 200,
+            'success' => true,
+            'messsage' => 'successful',
+            'data' => (time() * 1000)
+        ]);
+    }
 
     /**
      * Display the specified resource.
