@@ -151,7 +151,7 @@
                                     @foreach ($reports as $item)
                                         <tr>
                                             <td>{{$item->id}}</td>
-                                            <td{{$item->phoneNumber}}</td>
+                                            <td>{{$item->phoneNumber}}</td>
                                             <td><span class="badge bg-danger">{{$item->status}}</span></td>
                                         </tr>
 
