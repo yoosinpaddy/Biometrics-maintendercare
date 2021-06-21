@@ -152,7 +152,13 @@
                                         <tr>
                                             <td>{{$item->id}}</td>
                                             <td>{{$item->phoneNumber}}</td>
-                                            <td><span class="badge bg-danger">{{$item->status}}({{$item->updated_at}})</span></td>
+                                            @if ($item->status=='Success')
+                                                <td><span class="badge bg-info">{{$item->status}}</span>({{$item->updated_at}})</td>
+
+                                            @else
+                                                <td><span class="badge bg-danger">{{$item->status}}</span>({{$item->updated_at}})</td>
+
+                                            @endif
                                         </tr>
 
                                     @endforeach
