@@ -803,7 +803,7 @@ class StudentController extends Controller
         $insufficient=sizeof(PremiumReports::where('failureReason','like','%InsufficientCredit%')->get());
 
         $reports=PremiumReports::where('status','=','Success')
-            ->where('status','=','Failed')
+            ->orWhere('status','=','Failed')
             ->orderBy('updated_at', 'DESC')
             ->paginate(50);
 
