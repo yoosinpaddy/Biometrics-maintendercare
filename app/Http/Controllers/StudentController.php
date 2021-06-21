@@ -812,6 +812,7 @@ class StudentController extends Controller
             'subscribers' => $subscribers,
             'insufficient' => $insufficient,
             'reports' => $reports,
+            'title'=>'Premium Sms Reports'
         ]);
 
 //        $classes = Student::select('class')->where('class', '!=', '9')->groupBy('class')->get();
