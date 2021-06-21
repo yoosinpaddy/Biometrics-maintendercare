@@ -70,57 +70,57 @@
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
-    </div>
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
-            <div class="row">
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3>{{$subscribers}}</h3>
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <!-- Small boxes (Stat box) -->
+                <div class="row">
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>{{$subscribers}}</h3>
 
-                            <p>Current Subscribers</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-bag"></i>
+                                <p>Current Subscribers</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-bag"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>{{$successful}}<sup style="font-size: 20px"></sup></h3>
+                    <!-- ./col -->
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{$successful}}<sup style="font-size: 20px"></sup></h3>
 
-                            <p>Total Successful sms</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-stats-bars"></i>
+                                <p>Total Successful sms</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3>{{$insufficient}}</h3>
+                    <!-- ./col -->
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h3>{{$insufficient}}</h3>
 
-                            <p>Failed Sms(Insufficient credit)</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-pie-graph"></i>
+                                <p>Failed Sms(Insufficient credit)</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-pie-graph"></i>
+                            </div>
                         </div>
                     </div>
+                    <!-- ./col -->
                 </div>
-                <!-- ./col -->
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 </div>
 </body>
 </html>
