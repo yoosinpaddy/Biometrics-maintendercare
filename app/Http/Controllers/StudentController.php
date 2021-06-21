@@ -798,8 +798,8 @@ class StudentController extends Controller
     }
     public function delivery_reports_sms(Request $request)
     {
-        $successful=sizeof(PremiumReports::where('status','=','Submitted')->get());
         $subscribers=sizeof(SubscriptionReports::where('updateType','!=','deletion')->get());
+        $successful=sizeof(PremiumReports::where('status','=','Success')->get());
         $insufficient=sizeof(PremiumReports::where('failureReason','like','%InsufficientCredit%')->get());
 
         $reports=PremiumReports::where('status','=','Success')
