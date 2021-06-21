@@ -660,6 +660,7 @@ class DeviceRecordController extends Controller
         $premiumsms->shortCode=$request->shortCode;
         $premiumsms->keyword=$request->keyword;
         $premiumsms->phoneNumber=$request->phoneNumber;
+        $premiumsms->updateType=$request->updateType;
         $premiumsms->save();
         return response()->json([
             'code' => 200,
