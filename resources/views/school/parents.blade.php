@@ -90,7 +90,7 @@
                                     <table id="example1" class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th>System#</th>
                                                 <th>Name(Relationship)</th>
                                                 <th>Student(s)</th>
                                                 <th>Phone</th>
@@ -133,11 +133,11 @@
 
                                                         <div class="modal fade" id="sendSms{{ $item->id }}">
                                                             <div class="modal-dialog modal-xl">
-                                                                <form id="newParentForm"
+                                                                <form id="newParentForm{{ $item->id }}"
                                                                     action="{{ route('school.send.sms') }}"
                                                                     method='POST' enctype="multipart/form-data">
                                                                     <div class="modal-content">
-                                                                        <div id="progressBar"
+                                                                        <div id="progressBar{{ $item->id }}"
                                                                             class=" d-flex justify-content-center align-items-center">
 
                                                                         </div>
@@ -153,7 +153,7 @@
                                                                             <section class="content">
                                                                                 <div class="row">
                                                                                     <div class="col-md-12"
-                                                                                        id="generalCol">
+                                                                                        id="generalCol{{ $item->id }}">
                                                                                         <div class="card card-primary">
                                                                                             <div class="card-header">
                                                                                                 <h3 class="card-title">
@@ -174,7 +174,7 @@
                                                                                                 {!! csrf_field() !!}
                                                                                                 <div class="form-group">
                                                                                                     <input
-                                                                                                        id="parent_id"
+                                                                                                        id="parent_id{{ $item->id }}"
                                                                                                         type="hidden"
                                                                                                         name="parent_id"
                                                                                                         placeholder="Guardian first name"
@@ -183,12 +183,12 @@
                                                                                                 </div>
                                                                                                 <div class="form-group">
                                                                                                     <label
-                                                                                                        for="message">Message</label>
+                                                                                                        for="message{{ $item->id }}">Message</label>
                                                                                                     <textarea required=""
                                                                                                         type="text"
                                                                                                         name="message"
                                                                                                         placeholder="message"
-                                                                                                        id="message"
+                                                                                                        id="message{{ $item->id }}"
                                                                                                         class="form-control"
                                                                                                         value=""></textarea>
                                                                                                 </div>
@@ -438,7 +438,14 @@
     <!-- Page specific script -->
     <script>
         $(function() {
-            bsCustomFileInput.init();
+            $("#example1").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "searching": true,
+                "paging": false,
+                "buttons": ["csv","pdf"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
         $(function() {
             $("#nameList").DataTable({

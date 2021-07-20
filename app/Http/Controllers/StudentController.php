@@ -1006,7 +1006,7 @@ class StudentController extends Controller
     }
     public function getParents(Request $request)
     {
-        $parents = Guardian::paginate(100);
+        $parents = Guardian::orderby('fname')->paginate(100);
         $allStudents = Student::orderby('first_name')->get();
         //    dd($parents[0]->student);
         return view('school.parents', ['parents' => $parents, 'allStudents' => $allStudents]);
