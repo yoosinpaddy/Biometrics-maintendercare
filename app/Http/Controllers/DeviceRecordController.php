@@ -322,10 +322,13 @@ class DeviceRecordController extends Controller
                                 $faceRecord->status = 'exit';
                                 $faceRecord->save();
                                 //disable sms
-                                $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
-                                foreach ($guardians as $key) {
-                                    $this->sendPremiumSms($key, $faceRecord, $time_taken, 'second');
-                                }
+//                                $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+//                                foreach ($guardians as $key) {
+//                                    $this->sendPremiumSms($key, $faceRecord, $time_taken, 'second');
+//                                }
+                                //send to one guardian
+                                $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
+                                $this->sendSms($guardian, $faceRecord, $time_taken, 'second');
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                         ->whereDate('created_at', Carbon::today())
@@ -343,11 +346,16 @@ class DeviceRecordController extends Controller
                         $faceRecord->status = 'enter';
                         $faceRecord->save();
                         //disable sms $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+//
+//                        $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
+//                        foreach ($guardians as $key) {
+//                            $this->sendPremiumSms($key, $faceRecord, $time_taken, 'first');
+//                        }
+                        //Send 1 sms
+                        $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
 
-                        $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
-                        foreach ($guardians as $key) {
-                            $this->sendPremiumSms($key, $faceRecord, $time_taken, 'first');
-                        }
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first');
+
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
