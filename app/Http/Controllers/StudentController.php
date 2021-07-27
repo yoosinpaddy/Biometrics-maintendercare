@@ -1182,15 +1182,15 @@ class StudentController extends Controller
         $phone="0726569597";
         $message="ONLINE TEST";
         $response = Http::asForm()->withHeaders([
-            'apikey' => $_ENV['SMS_API_KEY'],
+            'apikey' => $_ENV['SMS_NORMAL_API_KEY'],
         ])->post('https://api.africastalking.com/version1/messaging', [
-            'username' => $_ENV['SMS_USERNAME'],
+            'username' => $_ENV['SMS_NORMAL_USERNAME'],
             'from' => $_ENV['SMS_FROM'],
             'message' => $message,
             'to' => $phone,
         ]);
         if ($response->successful()) {
-            // dd($response->json()['responses'][0]['response-description']);
+             dd($response->body());
             return back()->with('success', 'Message sent successfully');
         }
 

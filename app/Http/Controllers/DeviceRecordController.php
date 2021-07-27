@@ -753,13 +753,21 @@ class DeviceRecordController extends Controller
 
 
         $response = Http::asForm()->withHeaders([
-            'apikey' => $_ENV['SMS_API_KEY'],
+            'apikey' => $_ENV['SMS_NORMAL_API_KEY'],
         ])->post('https://api.africastalking.com/version1/messaging', [
-            'username' => $_ENV['SMS_USERNAME'],
+            'username' => $_ENV['SMS_NORMAL_USERNAME'],
             'from' => $_ENV['SMS_FROM'],
             'message' => $message1,
             'to' => $guardian->phone,
         ]);
+//        $response = Http::asForm()->withHeaders([
+//            'apikey' => $_ENV['SMS_API_KEY'],
+//        ])->post('https://api.africastalking.com/version1/messaging', [
+//            'username' => $_ENV['SMS_USERNAME'],
+//            'from' => $_ENV['SMS_FROM'],
+//            'message' => $message1,
+//            'to' => $guardian->phone,
+//        ]);
         if ($response->successful()) {
             // dd($response->json()['responses'][0]['response-description']);
             return back()->with('success', 'Message sent successfully');
