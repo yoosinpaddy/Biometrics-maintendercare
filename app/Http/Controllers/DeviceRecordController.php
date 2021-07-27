@@ -770,7 +770,7 @@ class DeviceRecordController extends Controller
 //        ]);
         if ($response->successful()) {
             // dd($response->json()['responses'][0]['response-description']);
-            return back()->with('success', 'Message sent successfully');
+//            return back()->with('success', 'Message sent successfully');
         }
 
         // Determine if the status code is >= 400...
