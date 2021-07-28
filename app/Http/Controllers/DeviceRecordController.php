@@ -6,6 +6,7 @@ use App\Models\DeviceRecord;
 use App\Models\FaceRecord;
 use App\Models\Guardian;
 use App\Models\PremiumReports;
+use App\Models\SmsRecord;
 use App\Models\Smstemplete;
 use App\Models\Staff;
 use App\Models\StaffFaceRecord;
@@ -328,7 +329,7 @@ class DeviceRecordController extends Controller
 //                                }
                                 //send to one guardian
                                 $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
-                                $this->sendSms($guardian, $faceRecord, $time_taken, 'second');
+                                $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                         ->whereDate('created_at', Carbon::today())
@@ -354,7 +355,7 @@ class DeviceRecordController extends Controller
                         //Send 1 sms
                         $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
 
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first');
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
 
                     }
 
@@ -735,7 +736,7 @@ class DeviceRecordController extends Controller
         //
     }
 
-    public function sendSms($guardian, $face_record, $time, $sms_time)
+    public function sendSms($guardian, $face_record, $time, $sms_time,$student)
     {
 
         $date = date("h:i a", ($time / 1000));
@@ -768,6 +769,13 @@ class DeviceRecordController extends Controller
 //            'message' => $message1,
 //            'to' => $guardian->phone,
 //        ]);
+        $sms=new SmsRecord();
+        $sms->student_id=$student->id;
+        $sms->recipient_id=$guardian->id;
+        $sms->message=$message1;
+        $sms->response_code=$response->status();
+        $sms->response_text=$response->body();
+        $sms->save();
         if ($response->successful()) {
             // dd($response->json()['responses'][0]['response-description']);
 //            return back()->with('success', 'Message sent successfully');
@@ -776,25 +784,25 @@ class DeviceRecordController extends Controller
         // Determine if the status code is >= 400...
         if ($response->failed()) {
             // dd($response->json()['errors']['message'][0]);
-            return back()->withErrors([
-                'message' => $response->body(),
-            ]);
+//            return back()->withErrors([
+//                'message' => $response->body(),
+//            ]);
         }
 
         // Determine if the response has a 400 level status code...
         if ($response->clientError()) {
 
-            return back()->withErrors([
-                'message' => 'Something went wrong, could not send sms',
-            ]);
+//            return back()->withErrors([
+//                'message' => 'Something went wrong, could not send sms',
+//            ]);
         }
 
         // Determine if the response has a 500 level status code...
         if ($response->serverError()) {
 
-            return back()->withErrors([
-                'message' => 'Something went wrong, could not send sms',
-            ]);
+//            return back()->withErrors([
+//                'message' => 'Something went wrong, could not send sms',
+//            ]);
         }
 
         // $response=Http::asForm()->post('https://quicksms.advantasms.com/api/services/sendsms',[
