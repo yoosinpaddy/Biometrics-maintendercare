@@ -37,6 +37,7 @@ class CreateFaceRecordsTable extends Migration
             $table->string('status')->nullable();//enter/exit
             $table->string('photo_url')->nullable();//base64
             $table->string('temperature')->nullable();//temperature
+            $table->string('has_parent')->default('yes');//temperature
             $table->softDeletes();
             $table->timestamps();
         });

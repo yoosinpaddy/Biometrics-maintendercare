@@ -19,7 +19,7 @@ class CreateSmsRecordsTable extends Migration
             $table->foreignId('recipient_id')->references('id')->on('guardians');
             $table->string('message');
             $table->string('response_code');
-            $table->string('response_text');
+            $table->longText('response_text');
 
             $table->string('type')->default('bulk');
             $table->timestamps();

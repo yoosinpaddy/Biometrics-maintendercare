@@ -321,6 +321,7 @@ class DeviceRecordController extends Controller
                                 $level = $level . "\nisExit";
                                 // dd('second');
                                 $faceRecord->status = 'exit';
+                                $faceRecord->has_parent = 'yes';
                                 $faceRecord->save();
                                 //disable sms
 //                                $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
@@ -337,6 +338,8 @@ class DeviceRecordController extends Controller
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
+
+                                $faceRecord->has_parent = 'yes';
                                 $faceRecord->save();
                             }
                         }
@@ -345,6 +348,8 @@ class DeviceRecordController extends Controller
                         //no record
                         // dd('first');
                         $faceRecord->status = 'enter';
+
+                        $faceRecord->has_parent = 'yes';
                         $faceRecord->save();
                         //disable sms $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
 //
@@ -396,6 +401,8 @@ class DeviceRecordController extends Controller
                                 $level = $level . "\nisExit";
                                 // dd('second');
                                 $faceRecord->status = 'exit';
+
+                                $faceRecord->has_parent = 'no';
                                 $faceRecord->save();
                             } else {
                                 $level = $level . "\nisMore than 2 times" . sizeof(FaceRecord::where('upi_no', '=', $upi_no)
@@ -404,6 +411,7 @@ class DeviceRecordController extends Controller
                                 // dd(sizeof(FaceRecord::where('upi_no', '=', $upi_no)
                                 // ->whereDate('created_at', Carbon::today())
                                 // ->get()));
+                                $faceRecord->has_parent = 'no';
                                 $faceRecord->save();
                             }
                         }
@@ -412,6 +420,7 @@ class DeviceRecordController extends Controller
                         //no record
                         // dd('first');
                         $faceRecord->status = 'enter';
+                        $faceRecord->has_parent = 'no';
                         $faceRecord->save();
                     }
                 }
