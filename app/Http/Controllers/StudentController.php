@@ -64,6 +64,7 @@ class StudentController extends Controller
                 array_push($formated_classes, $myclass);
             }
         }
+//        dd($formated_classes);
         // dd($streams);
         // $notifications=Notification::where('receiver_id','=',$user->id)->get();
         // $new=sizeof(Order::where(function($query) {
@@ -88,7 +89,15 @@ class StudentController extends Controller
             'email' => ['required', 'max:255'],
             'password' => ['required', 'max:255'],
         ]);
-
+        $credentials=[
+            'email'=>$request->email,
+            'password'=>$request->password,
+        ];
+        if(Auth::attempt($credentials)){
+            //sucesss
+        }else{
+            //not success
+        }
         if (sizeof(User::where('email', '=', $request->email)->get()) > 0) {
             $user = User::where('email', '=', $request->email)->first();
             if ($user->password == null) {
@@ -508,8 +517,8 @@ class StudentController extends Controller
                     // dd($user->id);
                     //add to guardian table
                     $guardian = new Guardian();
-                    if (sizeof(Guardian::where('user_id', '=', $user2->id)->get()) > 0) {
-                        $guardian = Guardian::where('user_id', '=', $user2->id)->first();
+                    if (sizeof(Guardian::where('user_id', '=', $user2->id)->where('student_id','=',$student->id)->get()) > 0) {
+                        $guardian = Guardian::where('user_id', '=', $user2->id)->where('student_id','=',$student->id)->first();
                     }
                     $guardian->user_id = $user2->id;
                     $guardian->student_id =  $student->id;
@@ -542,8 +551,8 @@ class StudentController extends Controller
                     // dd($user->id);
                     //add to guardian table
                     $guardian = new Guardian();
-                    if (sizeof(Guardian::where('user_id', '=', $user2->id)->get()) > 0) {
-                        $guardian = Guardian::where('user_id', '=', $user2->id)->first();
+                    if (sizeof(Guardian::where('user_id', '=', $user2->id)->where('student_id','=',$student->id)->get()) > 0) {
+                        $guardian = Guardian::where('user_id', '=', $user2->id)->where('student_id','=',$student->id)->first();
                     }
                     $guardian->user_id = $user2->id;
                     $guardian->student_id =  $student->id;
