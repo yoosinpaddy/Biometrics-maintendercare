@@ -48,8 +48,18 @@ class DeviceRecordController extends Controller
      */
     public function store(Request $request)
     {
+        $school="device ".$request->school_id;
+        if($request->school_id==1){
+            $school="MainTenderCare 1";
+        }else if($request->school_id==2){
+            $school="MainTenderCare 2";
+        }else if($request->school_id==3){
+            $school="Umoja 1";
+        }else if($request->school_id==4){
+            $school="Umoja 2";
+        }
         $record = new DeviceRecord();
-        $record->data = 'store|' . implode("|", $request->all());
+        $record->data = 'HeartBeat|'.$school.'|' . implode("|", $request->all());
         $record->save();
         return json_encode([
             'code' => 200,
