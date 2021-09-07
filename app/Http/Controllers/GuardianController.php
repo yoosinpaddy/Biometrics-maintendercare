@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guardian;
+use App\Models\SmsRecord;
 use App\Models\Smstemplete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -132,13 +133,20 @@ class GuardianController extends Controller
 
 
         $response = Http::asForm()->withHeaders([
-            'apikey' => $_ENV['SMS_API_KEY'],
+            'apikey' => $_ENV['SMS_NORMAL_API_KEY'],
         ])->post('https://api.africastalking.com/version1/messaging', [
-            'username' => $_ENV['SMS_USERNAME'],
+            'username' => $_ENV['SMS_NORMAL_USERNAME'],
             'from' => $_ENV['SMS_FROM'],
             'message' => $message,
             'to' => $guardian->phone,
         ]);
+        $sms=new SmsRecord();
+        $sms->student_id=$guardian->student_id;
+        $sms->recipient_id=$guardian->id;
+        $sms->message=$message;
+        $sms->response_code=$response->status();
+        $sms->response_text=$response->body();
+        $sms->save();
 
         if($response->successful()){
             // dd($response->json()['responses'][0]['response-description']);
