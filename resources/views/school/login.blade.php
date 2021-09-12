@@ -9,7 +9,7 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="{{route('dashboard')}}"><b>Tender </b>Care</a>
+            <a href="{{route('dashboard')}}">{{$_ENV['APP_NAME']}}</a>
         </div>
         <!-- /.login-logo -->
         <div class="card">
