@@ -1,6 +1,6 @@
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <title>Tender Care | {{ $title ?? 'Dashboard' }}</title>
+ <title>{{ $title ?? 'Dashboard' }}</title>
 
  <!-- Google Font: Source Sans Pro -->
  <link rel="stylesheet"
