@@ -2,6 +2,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
+
     <a href="{{route('default')}}" class="brand-link">
         {{--<img style="background: #ffffff;border: 2px solid;border-radius: 50px 20px;margin-top: 5px;max-width: 80px;" src="{{route('default')}}/images/logo.png" width="236" height="40" alt="My writer Logo"> --}}
 
@@ -12,10 +13,10 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          {{-- <img src="{{route('default').$user->profile_image}}" class="img-circle elevation-2" alt="@if (Auth::user()){{Auth::user()->name}}@endif"> --}}
+        {{-- <div class="image">
+        <img src="{{route('default').$user->profile_image}}" class="img-circle elevation-2" alt="@if (Auth::user()){{Auth::user()->name}}@endif"> --}}
           {{--<img src="{{route('default')}}/images/logo.png" class="img-circle elevation-2" alt="@if (Auth::user()){{Auth::user()->name}}@endif">
-        </div>--}}
+        </div> --}}
         <div class="info">
           <a href="#" class="d-block">@if (Auth::user())
             {{Auth::user()->name}}
