@@ -25,18 +25,4 @@
  <link rel="stylesheet" href="{{ route('default') }}/plugins/daterangepicker/daterangepicker.css">
  <!-- summernote -->
  <link rel="stylesheet" href="{{ route('default') }}/plugins/summernote/summernote-bs4.min.css">
- {{-- Google Analytics --}}
- <!-- Global site tag (gtag.js) - Google Analytics -->
- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-191806104-1">
- </script>
- <script>
-     window.dataLayer = window.dataLayer || [];
 
-     function gtag() {
-         dataLayer.push(arguments);
-     }
-     gtag('js', new Date());
-
-     gtag('config', 'UA-191806104-1');
-
- </script>
