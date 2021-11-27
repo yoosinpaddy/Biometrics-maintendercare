@@ -50,16 +50,16 @@ class DeviceRecordController extends Controller
     {
         $school="device ".$request->school_id;
         if($request->school_id==1){
-            $school="MainTenderCare 1";
+            $school=" 1";
         }else if($request->school_id==2){
-            $school="MainTenderCare 2";
+            $school=" 2";
         }else if($request->school_id==3){
-            $school="Umoja 1";
+            $school=" 3";
         }else if($request->school_id==4){
-            $school="Umoja 2";
+            $school=" 4";
         }
         $record = new DeviceRecord();
-        $record->data = 'HeartBeat|'.env('APP_NAME').'|' . implode("|", $request->all());
+        $record->data = 'HeartBeat|'.env('APP_NAME').$school.'|' . implode("|", $request->all());
         $record->save();
         return json_encode([
             'code' => 200,
