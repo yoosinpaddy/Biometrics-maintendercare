@@ -59,7 +59,7 @@ class DeviceRecordController extends Controller
             $school="Umoja 2";
         }
         $record = new DeviceRecord();
-        $record->data = 'HeartBeat|'.$school.'|' . implode("|", $request->all());
+        $record->data = 'HeartBeat|'.env('APP_NAME').'|' . implode("|", $request->all());
         $record->save();
         return json_encode([
             'code' => 200,
