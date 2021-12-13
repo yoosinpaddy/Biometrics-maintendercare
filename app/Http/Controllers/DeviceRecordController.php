@@ -142,7 +142,7 @@ class DeviceRecordController extends Controller
                 // dd($student->id);
                 if ($student != null) {
 
-                    $level = $level . "\nnnisStudent";
+                    $level = $level . "\nisStudent";
                     $faceRecord = new FaceRecord();
                     $faceRecord->upi_no = $upi_no;
 
@@ -297,7 +297,7 @@ class DeviceRecordController extends Controller
 
                 $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->first();
                 if ($guardian != null) {
-                    $level = $level . "\nhasssGuardian";
+                    $level = $level . "\nhasGuardian";
                     $faceR = FaceRecord::where('upi_no', '=', $upi_no)
                         ->where('time_taken', '>', (string)Carbon::today()->valueOf())
                         ->where('time_taken', '<', (string)Carbon::tomorrow()->valueOf())
@@ -370,7 +370,7 @@ class DeviceRecordController extends Controller
                         //Send 1 sms
                         $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
 
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
 
                     }
 
@@ -429,7 +429,7 @@ class DeviceRecordController extends Controller
                         $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'enter';
+                        $faceRecord->status = 'exit';
                         $faceRecord->has_parent = 'no';
                         $faceRecord->save();
                     }
@@ -487,7 +487,7 @@ class DeviceRecordController extends Controller
                     } else {
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'enter';
+                        $faceRecord->status = 'exit';
                         $faceRecord->save();
                     }
                 }
@@ -764,7 +764,7 @@ class DeviceRecordController extends Controller
         if ($sms_time == 'first') {
             $templete1 = Smstemplete::where('id', '=', 1)->get()->pluck('content');
 
-            $message1 = "Dear $guardian->fname, your child " . $face_record->student->first_name . " " . $face_record->student->surname . "  UPI:" . $face_record->student->upi_no . " has arrived at school at $new_time with a temperature of $temp " . $templete1[0];
+            $message1 = "Dear $guardian->fname, your child " . $face_record->student->first_name . " " . $face_record->student->surname . "  UPI:" . $face_record->student->upi_no . " has left school for home at $new_time with a temperature of $temp " . $templete1[0];
             // dd($templete);
         } else {
             $templete1 = Smstemplete::where('id', '=', 2)->get()->pluck('content');
