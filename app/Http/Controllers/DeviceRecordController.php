@@ -39,6 +39,7 @@ class DeviceRecordController extends Controller
     {
         //
     }
+    //yourschoolname
 
     /**
      * Store a newly created resource in storage.
@@ -357,7 +358,7 @@ class DeviceRecordController extends Controller
                         $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'exit';
+                        $faceRecord->status = 'enter';
 
                         $faceRecord->has_parent = 'yes';
                         $faceRecord->save();
@@ -370,7 +371,7 @@ class DeviceRecordController extends Controller
                         //Send 1 sms
                         $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
 
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
 
                     }
 
@@ -429,7 +430,7 @@ class DeviceRecordController extends Controller
                         $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'exit';
+                        $faceRecord->status = 'enter';
                         $faceRecord->has_parent = 'no';
                         $faceRecord->save();
                     }
@@ -487,7 +488,7 @@ class DeviceRecordController extends Controller
                     } else {
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'exit';
+                        $faceRecord->status = 'enter';
                         $faceRecord->save();
                     }
                 }
