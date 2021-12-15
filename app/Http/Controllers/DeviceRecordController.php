@@ -357,7 +357,7 @@ class DeviceRecordController extends Controller
                         $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'enter';
+                        $faceRecord->status = 'exit';
 
                         $faceRecord->has_parent = 'yes';
                         $faceRecord->save();
@@ -370,7 +370,7 @@ class DeviceRecordController extends Controller
                         //Send 1 sms
                         $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
 
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
 
                     }
 
@@ -429,7 +429,7 @@ class DeviceRecordController extends Controller
                         $level = $level . "\nnoFace";
                         //no record
                         // dd('first');
-                        $faceRecord->status = 'enter';
+                        $faceRecord->status = 'exit';
                         $faceRecord->has_parent = 'no';
                         $faceRecord->save();
                     }
