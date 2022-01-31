@@ -359,7 +359,6 @@ class DeviceRecordController extends Controller
                         $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
                         if ($faceRecord->time_taken>(string)carbon::today()->addHour(9)->valueOf()) {
                             $level=$level."\npast 9am";
-
                             $faceRecord->status = 'exit';
                             $faceRecord->has_parent = 'yes';
                             $faceRecord->save();
@@ -367,10 +366,10 @@ class DeviceRecordController extends Controller
                         }
                             else{
                             $level=$level."\nbefore 9am";
-                                $faceRecord->status = 'exitt';
+                                $faceRecord->status = 'enter';
                                 $faceRecord->has_parent = 'yes';
                                 $faceRecord->save();
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
                             }
                     }
 
@@ -433,16 +432,12 @@ class DeviceRecordController extends Controller
                             $faceRecord->status = 'exit';
                             $faceRecord->has_parent = 'no';
                             $faceRecord->save();
-
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
                         }
                             else{
                             $level=$level."\nbefore 9am";
                                 $faceRecord->status = 'enter';
                                 $faceRecord->has_parent = 'no';
                                 $faceRecord->save();
-
-                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
                             }
                     }
                 }
