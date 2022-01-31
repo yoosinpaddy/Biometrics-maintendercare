@@ -356,23 +356,22 @@ class DeviceRecordController extends Controller
                         }
                     } else {
                         $level = $level . "\nnoFace";
-                        //no record
-                        // dd('first');
-                        $faceRecord->status = 'exit';
-
-                        $faceRecord->has_parent = 'yes';
-                        $faceRecord->save();
-                        //disable sms $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
-//
-//                        $guardians = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get();
-//                        foreach ($guardians as $key) {
-//                            $this->sendPremiumSms($key, $faceRecord, $time_taken, 'first');
-//                        }
-                        //Send 1 sms
                         $guardian = Guardian::where('student_id', '=', $student->id)->where('should_notify', '=', 'true')->get()->first();
+                        if ($faceRecord->time_taken>(string)carbon::today()->addHour(9)->valueOf()) {
+                            $level=$level."\npast 9am";
 
+                            $faceRecord->status = 'exit';
+                            $faceRecord->has_parent = 'yes';
+                            $faceRecord->save();
                             $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
-
+                        }
+                            else{
+                            $level=$level."\nbefore 9am";
+                                $faceRecord->status = 'exitt';
+                                $faceRecord->has_parent = 'yes';
+                                $faceRecord->save();
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
+                            }
                     }
 
                     // return back()->with('success', 'Sms sent successfully');
