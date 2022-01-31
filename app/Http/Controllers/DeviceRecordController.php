@@ -427,11 +427,23 @@ class DeviceRecordController extends Controller
                         }
                     } else {
                         $level = $level . "\nnoFace";
-                        //no record
-                        // dd('first');
-                        $faceRecord->status = 'exit';
-                        $faceRecord->has_parent = 'no';
-                        $faceRecord->save();
+                        if ($faceRecord->time_taken>(string)carbon::today()->addHour(9)->valueOf()) {
+                            $level=$level."\npast 9am";
+
+                            $faceRecord->status = 'exit';
+                            $faceRecord->has_parent = 'no';
+                            $faceRecord->save();
+
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'second',$student);
+                        }
+                            else{
+                            $level=$level."\nbefore 9am";
+                                $faceRecord->status = 'enter';
+                                $faceRecord->has_parent = 'no';
+                                $faceRecord->save();
+
+                            $this->sendSms($guardian, $faceRecord, $time_taken, 'first',$student);
+                            }
                     }
                 }
             } else {
